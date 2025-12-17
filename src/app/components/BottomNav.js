@@ -2,14 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Menu, Info, Wallet } from 'lucide-react'
+import { Home, Info, Wallet } from 'lucide-react'
 
 export default function BottomNav() {
   const pathname = usePathname()
 
-  // Only show nav on home and menu and details pages
-  const allowedPaths = ['/', '/menu', '/details']
-  if (!allowedPaths.includes(pathname)) {
+  // Only show nav on home, menu, details and wallet pages (including nested routes)
+  if (
+    pathname !== '/' &&
+    !pathname.startsWith('/menu') &&
+    !pathname.startsWith('/details') &&
+    !pathname.startsWith('/wallet')
+  ) {
     return null
   }
 
@@ -36,7 +40,7 @@ export default function BottomNav() {
           {/* Divider */}
           <div className="w-px h-6 bg-gray-300" />
 
-          {/* Menu */}
+          {/* Wallet */}
           <div className="flex-1 flex items-center justify-center">
             <NavLink item={navItems[1]} pathname={pathname} />
           </div>
