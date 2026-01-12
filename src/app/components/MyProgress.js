@@ -1,83 +1,114 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
-export default function MyProgress({
-  data = {
-    today: { earnings: 0, hours: '0:00hrs', orders: 0 },
-    week: { earnings: 248.5, hours: '12:45hrs', orders: 18 }
-  },
-  onOpenBookings // function provided by parent to open bookings modal
-}) {
+const PROGRESS_DATA = {
+  today: { earnings: 0, hours: '0:00 hrs', orders: 0 },
+  week: { earnings: 248.5, hours: '12:45 hrs', orders: 18 }
+}
+
+const PERIODS = [
+  { key: 'today', label: 'Today' },
+  { key: 'week', label: 'This Week' }
+]
+
+const BUTTON_CLASSES = {
+  active:
+    'bg-sky-500 text-white shadow-md ring-2 ring-sky-400 scale-105',
+  inactive:
+    'bg-sky-100 text-sky-800 hover:bg-sky-200'
+}
+
+export default function MyProgress() {
   const [period, setPeriod] = useState('today')
-  const current = period === 'today' ? data.today : data.week
+
+  const current = useMemo(() => PROGRESS_DATA[period], [period])
 
   return (
-    <div className="w-full max-w-3xl mx-auto space-y-4">
-      {/* Progress Card */}
+    <section className="w-full mx-auto space-y-4">
       <div className="bg-white rounded-md shadow p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-700">My Progress</h3>
+        {/* Header */}
+        <header className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-gray-700">
+            My Progress
+          </h3>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPeriod('today')}
-              aria-pressed={period === 'today'}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold focus:outline-none transition-all
-                ${period === 'today' ? 'bg-yellow-500 text-white shadow' : 'bg-yellow-100 text-yellow-800'}`}
-              style={{ minWidth: 92 }}
-            >
-              Today
-            </button>
+          <div
+            className="flex items-center gap-2"
+            role="tablist"
+            aria-label="Progress period"
+          >
+            {PERIODS.map(({ key, label }) => {
+              const isActive = period === key
 
-            <button
-              onClick={() => setPeriod('week')}
-              aria-pressed={period === 'week'}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold focus:outline-none transition-all
-                ${period === 'week' ? 'bg-sky-500 text-white shadow' : 'bg-sky-100 text-sky-800'}`}
-              style={{ minWidth: 92 }}
-            >
-              This Week
-            </button>
+              return (
+                <button
+                  key={key}
+                  onClick={() => setPeriod(key)}
+                  role="tab"
+                  aria-selected={isActive}
+                  className={`px-4 py-1.5 rounded-full text-sm font-semibold
+                    transition-all duration-200 ease-out
+                    ${isActive ? BUTTON_CLASSES.active : BUTTON_CLASSES.inactive}`}
+                  style={{ minWidth: 92 }}
+                >
+                  {label}
+                </button>
+              )
+            })}
           </div>
-        </div>
+        </header>
 
+        {/* Stats */}
         <div className="bg-gray-100 rounded-md p-4">
-          <div className="flex gap-4 items-stretch">
-            <div className="flex-1 flex flex-col items-center justify-center py-3">
-              <div className="text-2xl font-bold text-gray-800">
-                ${Number(current.earnings).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-              </div>
-              <div className="text-sm text-gray-600 mt-2">Earnings</div>
-            </div>
-
-            <div className="w-px bg-gray-300" />
-
-            <div className="flex-1 flex flex-col items-center justify-center py-3">
-              <div className="text-2xl font-bold text-gray-800">{current.hours}</div>
-              <div className="text-sm text-gray-600 mt-2">Time</div>
-            </div>
-
-            <div className="w-px bg-gray-300" />
-
-            <div className="flex-1 flex flex-col items-center justify-center py-3">
-              <div className="text-2xl font-bold text-gray-800">{current.orders}</div>
-              <div className="text-sm text-gray-600 mt-2">Orders</div>
-            </div>
+          <div className="flex items-stretch">
+            <Stat
+              label="Earnings"
+              value={formatINRCurrency(current.earnings)}
+            />
+            <Divider />
+            <Stat label="Time" value={current.hours} />
+            <Divider />
+            <Stat label="Orders" value={current.orders} />
           </div>
         </div>
       </div>
+    </section>
+  )
+}
 
-      {/* Bookings button (calls parent handler to open modal) */}
-      <div className="mt-4">
-        <button
-          onClick={onOpenBookings}
-          className="w-full bg-green-200 hover:bg-green-300 rounded-lg px-6 py-6 text-2xl font-semibold text-gray-800 shadow"
-          aria-haspopup="dialog"
-        >
-          Bookings
-        </button>
+/* ---------- helpers ---------- */
+
+function formatINRCurrency(amount) {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  }).format(Number(amount))
+}
+
+/* ---------- UI components ---------- */
+
+function Stat({ label, value }) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center py-3">
+      <div className="text-2xl font-bold text-gray-800">
+        {value}
+      </div>
+      <div className="text-sm text-gray-600 mt-1">
+        {label}
       </div>
     </div>
+  )
+}
+
+function Divider() {
+  return (
+    <div
+      className="w-px bg-gray-300"
+      role="separator"
+      aria-hidden="true"
+    />
   )
 }

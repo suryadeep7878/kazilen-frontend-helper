@@ -29,7 +29,7 @@ export default function Header({ size = 40 }) {
       if (name) {
         setInitial(name.trim().charAt(0).toUpperCase())
       }
-    } catch (e) {
+    } catch {
       setInitial('•')
     }
   }, [])
@@ -45,7 +45,7 @@ export default function Header({ size = 40 }) {
   const knobTranslate = pillWidth - knobSize - knobLeft * 2
 
   return (
-    <div className="flex items-center gap-4 relative">
+    <div className="flex items-center gap-4 w-full relative">
       {/* Toggle */}
       <button
         onClick={toggle}
@@ -69,7 +69,9 @@ export default function Header({ size = 40 }) {
             borderRadius: 9999,
             background: '#fff',
             boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
-            transform: online ? `translateX(${knobTranslate}px)` : 'translateX(0px)',
+            transform: online
+              ? `translateX(${knobTranslate}px)`
+              : 'translateX(0px)',
             transition: 'transform 240ms cubic-bezier(.2,.9,.2,1)',
           }}
         />
@@ -97,15 +99,16 @@ export default function Header({ size = 40 }) {
         </div>
       </button>
 
-      {/* Avatar (first letter of professional name) */}
+      {/* Avatar moved to right */}
       <button
         onClick={openProfile}
-        className="relative rounded-full flex items-center justify-center font-semibold text-orange-600 bg-orange-100"
+        className="ml-auto relative rounded-full flex items-center justify-center font-semibold text-orange-600 bg-orange-100"
         style={{ width: size, height: size, fontSize: size / 2 }}
         title="Open profile"
         aria-label="Open profile"
       >
         {initial}
+
         {/* status dot */}
         <span
           style={{
