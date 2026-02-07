@@ -99,7 +99,7 @@ export default function WorkerDetails() {
 
   const worker = {
     name: "Rajesh Kumar",
-    role: "Helper",
+    role: "Electrician",
     rating: 4.6,
     image: "https://i.pravatar.cc/150?img=12",
   }
