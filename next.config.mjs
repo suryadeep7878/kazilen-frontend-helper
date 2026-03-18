@@ -1,4 +1,4 @@
-import nextPWA from "next-pwa";
+import withPWAInit from "@ducanh2912/next-pwa";
 
 const runtimeCaching = [
   // 1. Next.js Static Builds & JS/CSS Bundles (Strict Cache-First)
@@ -71,7 +71,7 @@ const runtimeCaching = [
   },
 ];
 
-const withPWA = nextPWA({
+const withPWA = withPWAInit({
   dest: "public",
   register: true,
   skipWaiting: true,
@@ -89,7 +89,7 @@ const withPWA = nextPWA({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    reactStrictMode: true,
+  reactStrictMode: true,
 };
 
 export default withPWA(nextConfig);
