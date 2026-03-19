@@ -6,11 +6,7 @@ import {
   ChevronRight,
   User,
   Star,
-  ClipboardList,
-  MapPin,
-  EyeOff,
   HelpCircle,
-  CreditCard,
   Info,
   LogOut,
 } from 'lucide-react'
@@ -41,34 +37,11 @@ export default function ProfilePage() {
           onClick={() => router.push('/profile/rating')}
         />
 
-        <ProfileItem
-          icon={<ClipboardList size={20} className="text-blue-500" />}
-          label="Your orders"
-          onClick={() => router.push('/profile/orders')}
-        />
-
-        <ProfileItem
-          icon={<MapPin size={20} className="text-red-500" />}
-          label="Address book"
-          onClick={() => router.push('/select-address')}
-        />
-
-        <ProfileItem
-          icon={<EyeOff size={20} className="text-gray-500" />}
-          label="Hidden Professionals"
-          onClick={() => router.push('/profile/hidden')}
-        />
 
         <ProfileItem
           icon={<HelpCircle size={20} className="text-green-600" />}
           label="Online ordering help"
           onClick={() => router.push('/profile/help')}
-        />
-
-        <ProfileItem
-          icon={<CreditCard size={20} className="text-purple-600" />}
-          label="Payment settings"
-          onClick={() => router.push('/profile/payment')}
         />
 
         <ProfileItem

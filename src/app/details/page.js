@@ -180,7 +180,7 @@ export default function WorkerDetails() {
             </div>
             <div className="flex flex-col items-center">
               <img
-                src={worker.image}
+                
                 className="h-16 w-16 rounded-full ring-2 ring-indigo-200"
               />
               <div className="mt-1 flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs">

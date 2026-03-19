@@ -12,7 +12,7 @@ export default function BottomNav() {
     pathname !== '/' &&
     !pathname.startsWith('/menu') &&
     !pathname.startsWith('/details') &&
-    !pathname.startsWith('/wallet') &&
+    // !pathname.startsWith('/wallet') &&
     !pathname.startsWith('/request')
   ) {
     return null
@@ -20,7 +20,7 @@ export default function BottomNav() {
 
   const navItems = [
     { name: 'Home', href: '/', icon: Home },
-    { name: 'Wallet', href: '/wallet', icon: Wallet },
+    // { name: 'Wallet', href: '/wallet', icon: Wallet },
     { name: 'Request', href: '/request', icon: ClipboardList },
     { name: 'Details', href: '/details', icon: Info }
   ]
