@@ -1,72 +1,68 @@
 import withPWAInit from "@ducanh2912/next-pwa";
 
 const runtimeCaching = [
-  // 1. Next.js Static Builds & JS/CSS Bundles (Strict Cache-First)
+  // 1. Static Assets (JS/CSS)
   {
-    urlPattern: /^https?.*\.(?:js|css)$/,
-    handler: "CacheFirst",
+    urlPattern: /^https?.*\.(?:js|css)$/i,
+    handler: 'CacheFirst',
     options: {
-      cacheName: "kazilen-static-assets",
+      cacheName: 'kazilen-static-assets-v1',
       expiration: {
         maxEntries: 200,
-        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
+        maxAgeSeconds: 30 * 24 * 60 * 60,
       },
     },
   },
-
-  // 2. Local & Remote Images (Stale-While-Revalidate to keep professional pictures fresh but instantly load)
+  // 2. Images (Optimized only)
   {
-    urlPattern: /^https?.*\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/,
-    handler: "StaleWhileRevalidate",
+    urlPattern: /^https?.*\.(?:webp|avif|jpeg|jpg)$/i,
+    handler: 'StaleWhileRevalidate',
     options: {
-      cacheName: "kazilen-images",
+      cacheName: 'kazilen-images-v1',
       expiration: {
-        maxEntries: 400,
-        maxAgeSeconds: 60 * 24 * 60 * 60, // 60 Days
+        maxEntries: 80, // strictly limited per requirements
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
       },
     },
   },
-
-  // 3. Fonts (Google Fonts, Custom Fonts) - Cache First for performance
+  // 3. API POST Requests (Background Sync)
   {
-    urlPattern: /^https?.*\.(?:woff|woff2|ttf|eot)$/,
-    handler: "CacheFirst",
+    urlPattern: /\/api\/.*/i,
+    handler: 'NetworkOnly',
+    method: 'POST',
     options: {
-      cacheName: "kazilen-fonts",
-      expiration: {
-        maxEntries: 50,
-        maxAgeSeconds: 365 * 24 * 60 * 60, // 1 Year
+      backgroundSync: {
+        name: 'booking-queue-v1',
+        options: {
+          maxRetentionTime: 24 * 60,
+        },
       },
     },
   },
-
-  // 4. Third-Party APIs (Mapbox, Stripe, Google Maps) - Cross Origin Caching
+  // 4. API GET Requests (NetworkFirst for API)
   {
-    urlPattern: /^https?:\/\/(?:api\.mapbox\.com|fonts\.googleapis\.com|fonts\.gstatic\.com).*/i,
-    handler: "StaleWhileRevalidate",
+    urlPattern: /\/api\/.*/i,
+    handler: 'NetworkFirst',
+    method: 'GET',
     options: {
-      cacheName: "kazilen-external-apis",
-      expiration: {
-        maxEntries: 50,
-        maxAgeSeconds: 7 * 24 * 60 * 60, // 1 Week
-      },
-      cacheableResponse: {
-        statuses: [0, 200], // Allow opaque cross-origin responses
-      },
-    },
-  },
-
-  // 5. Next.js Pages & Client-Side Navigations (High-Speed Local First)
-  {
-    urlPattern: /^https?.*/,
-    handler: "StaleWhileRevalidate",
-    options: {
-      cacheName: "kazilen-pages",
+      cacheName: 'kazilen-api-get-v1',
       expiration: {
         maxEntries: 100,
-        maxAgeSeconds: 24 * 60 * 60, // 1 Day
+        maxAgeSeconds: 24 * 60 * 60,
       },
-      // Ensure we immediately serve the cached HTML without waiting for the network timeout lock
+      networkTimeoutSeconds: 5,
+    },
+  },
+  // 5. Next.js Pages (StaleWhileRevalidate)
+  {
+    urlPattern: /^https?.*/, 
+    handler: 'StaleWhileRevalidate',
+    options: {
+      cacheName: 'kazilen-pages-v1',
+      expiration: {
+        maxEntries: 100,
+        maxAgeSeconds: 24 * 60 * 60,
+      },
     },
   },
 ];
@@ -76,7 +72,9 @@ const withPWA = withPWAInit({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === "development",
-  buildExcludes: [/app-build-manifest\.json$/],
+  // Exclude large PNGs specifically from being precached by webpack and regular statics
+  buildExcludes: [/app-build-manifest\.json$/, /.*\/subcategories\/.*\.png$/i, /.*icon-(384x384|512x512)\.png$/i],
+  publicExcludes: ['!subcategories/**/*.png', '!icons/icon-384x384.png', '!icons/icon-512x512.png'],
   runtimeCaching,
   fallbacks: {
     document: "/offline.html",
