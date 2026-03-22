@@ -4,13 +4,13 @@
 import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createProfessional } from '../lib/api'
+import { apiRequest } from '@/utils/api'
 
 export default function CreateAccountClient({ phoneFromQuery }) {
   const router = useRouter()
 
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const [address, setAddress] = useState('')
   const [dob, setDob] = useState('')
   const [gender, setGender] = useState('')
   const [category, setCategory] = useState('')
@@ -40,15 +40,15 @@ export default function CreateAccountClient({ phoneFromQuery }) {
       setLoading(true)
 
       const payload = {
-        phone,
+				phone: phone,
         name: name.trim(),
-        email: email || null,
-        dob,
+        dob: dob,
         gender: gender.toUpperCase(),
-        category,
+        category:category,
+				address:address
       }
 
-      const created = await createProfessional(payload)
+      const created = await apiRequest("POST", "/create-worker", payload) 
 
       if (created?.id) {
         const idStr = String(created.id)
