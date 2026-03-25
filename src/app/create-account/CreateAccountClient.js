@@ -126,19 +126,6 @@ export default function CreateAccountClient({ phoneFromQuery }) {
       </div>
 
       <div className="px-4 mt-4">
-        <fieldset className="relative border border-gray-300 rounded-lg px-3 pt-4 pb-2">
-          <legend className="text-xs px-1 text-gray-500">Email (optional)</legend>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            className="w-full border-none bg-transparent p-0 text-sm text-gray-800 focus:outline-none"
-          />
-        </fieldset>
-      </div>
-
-      <div className="px-4 mt-4">
         <fieldset className={`relative border rounded-lg px-3 pt-4 pb-2 ${touched.dob && !dob ? 'border-red-400' : 'border-gray-300'}`}>
           <legend className="text-xs px-1 text-gray-500">Date of birth *</legend>
           <input
