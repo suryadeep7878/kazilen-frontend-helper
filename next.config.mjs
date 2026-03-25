@@ -40,19 +40,19 @@ const runtimeCaching = [
     },
   },
   // 4. API GET Requests (NetworkFirst for API)
-  {
-    urlPattern: /\/api\/.*/i,
-    handler: 'NetworkFirst',
-    method: 'GET',
-    options: {
-      cacheName: 'kazilen-api-get-v1',
-      expiration: {
-        maxEntries: 100,
-        maxAgeSeconds: 24 * 60 * 60,
-      },
-      networkTimeoutSeconds: 5,
-    },
-  },
+  //{
+  //  urlPattern: /\/api\/.*/i,
+  //  handler: 'NetworkFirst',
+  //  method: 'GET',
+  //  options: {
+  //   cacheName: 'kazilen-api-get-v1',
+  //    expiration: {
+  //      maxEntries: 100,
+  //      maxAgeSeconds: 24 * 60 * 60,
+  //    },
+  //    networkTimeoutSeconds: 5,
+  //  },
+  //},
   // 5. Next.js Pages (StaleWhileRevalidate)
   {
     urlPattern: /^https?.*/, 
