@@ -45,7 +45,7 @@ export default function LoginPage() {
 				clearSavedUserKeys();
 			}
 
-			const result = await apiRequest("POST", "/check", phone);
+			const result = await apiRequest("/check", "POST", phone);
 
 			localStorage.setItem("kazilen_professional_phone", phone);
 			localStorage.setItem("kazilen_user_phone", phone);
