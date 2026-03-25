@@ -16,8 +16,8 @@ export default function CreateAccountClient({ phoneFromQuery }) {
   const [category, setCategory] = useState('')
   const [touched, setTouched] = useState({})
   const [loading, setLoading] = useState(false)
-
-  const [phone] = serach.get("phone")
+	
+  const [phone] = phoneFromQuery
 
   const canSubmit = Boolean(
     name.trim() && dob && gender && category && /^\d{10}$/.test(phone)
