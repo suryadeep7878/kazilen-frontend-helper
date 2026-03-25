@@ -1,4 +1,5 @@
 // app/create-account/page.js
+'use client'
 
 import CreateAccountClient from './CreateAccountClient'
 import { useSearchParams } from 'next/navigation'

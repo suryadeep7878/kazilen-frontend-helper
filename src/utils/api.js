@@ -1,4 +1,4 @@
-const BASE_URL = "http://127.0.01:8000/api/helper/";
+const BASE_URL = "http://127.0.01:8000/api/helper";
 
 export const apiRequest = async (endpoint, method = "Get", body = null) => {
         const headers = {

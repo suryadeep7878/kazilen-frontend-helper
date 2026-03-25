@@ -13,25 +13,25 @@ export default function CreateAccountClient({ phoneFromQuery }) {
   const [address, setAddress] = useState('')
   const [dob, setDob] = useState('')
   const [gender, setGender] = useState('')
-  const [category, setCategory] = useState('')
+  //const [category, setCategory] = useState('')
   const [touched, setTouched] = useState({})
   const [loading, setLoading] = useState(false)
-	
-  const [phone] = phoneFromQuery
+	console.log(phoneFromQuery)	
+  const [phone, setPhone] = useState(phoneFromQuery)
 
   const canSubmit = Boolean(
-    name.trim() && dob && gender && category && /^\d{10}$/.test(phone)
+    name.trim() && dob && gender && /^\d{10}$/.test(phone)
   )
 
-  const CATEGORY_OPTIONS = [
-    { value: 'customer', label: 'Customer' },
-    { value: 'worker', label: 'Worker' },
-    { value: 'shopkeeper', label: 'Shopkeeper' },
-  ]
+  //const CATEGORY_OPTIONS = [
+  //  { value: 'customer', label: 'Customer' },
+  //  { value: 'worker', label: 'Worker' },
+  //  { value: 'shopkeeper', label: 'Shopkeeper' },
+  //]
 
   const handleCreateAccount = async () => {
     if (!canSubmit) {
-      setTouched({ name: true, dob: true, gender: true, category: true })
+      setTouched({ name: true, dob: true, gender: true})
       alert('Please fill all required fields.')
       return
     }
@@ -44,11 +44,11 @@ export default function CreateAccountClient({ phoneFromQuery }) {
         name: name.trim(),
         dob: dob,
         gender: gender.toUpperCase(),
-        category:category,
+      //  category:category,
 				address:address
       }
 
-      const created = await apiRequest("POST", "/create-worker", payload) 
+      const created = await apiRequest("/create-worker", "POST", payload) 
 
       if (created?.id) {
         const idStr = String(created.id)
@@ -67,10 +67,10 @@ export default function CreateAccountClient({ phoneFromQuery }) {
         localStorage.setItem('kazilen_user_phone_v2', finalPhone)
       }
 
-      if (category) {
-        localStorage.setItem('kazilen_professional_category', category)
-        localStorage.setItem('kazilen_user_category', category)
-      }
+      //if (category) {
+      //  localStorage.setItem('kazilen_professional_category', category)
+      //  localStorage.setItem('kazilen_user_category', category)
+      //}
 
       alert('Account created successfully!')
       router.replace('/')
@@ -158,26 +158,6 @@ export default function CreateAccountClient({ phoneFromQuery }) {
         </fieldset>
         {touched.gender && !gender && (
           <p className="text-xs text-red-500 mt-1">Gender is required.</p>
-        )}
-      </div>
-
-      <div className="px-4 mt-4 mb-6">
-        <fieldset className={`relative border rounded-lg px-3 pt-4 pb-2 ${touched.category && !category ? 'border-red-400' : 'border-gray-300'}`}>
-          <legend className="text-xs px-1 text-gray-500">Category *</legend>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            onBlur={() => setTouched((t) => ({ ...t, category: true }))}
-            className="w-full border-none bg-transparent text-sm text-gray-800 focus:outline-none"
-          >
-            <option value="" disabled>Select category</option>
-            {CATEGORY_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-        </fieldset>
-        {touched.category && !category && (
-          <p className="text-xs text-red-500 mt-1">Category is required.</p>
         )}
       </div>
 
