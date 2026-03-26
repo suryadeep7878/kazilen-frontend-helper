@@ -24,100 +24,70 @@ export default function WorkerDetails({ worker }) {
 			name: "Book Consultation",
 			price: 100,
 			details: "Basic consultation service",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 2,
 			name: "Fan",
 			price: 600,
 			details: "One-time fixed price service",
-			warranty: { value: 7, unit: "days" },
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 3,
 			name: "Light",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 3,
 			name: "Light",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 4,
 			name: "Wiring",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 5,
 			name: "Doorbell",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 6,
 			name: "MCB",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 7,
 			name: "Inverter",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 8,
 			name: "Stabiliser",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 		{
 			id: 9,
 			name: "Book by Hour",
 			price: 80,
 			details: "Charged per working hour",
-			warranty: null,
-			open: false,
 			enabled: true,
-			editing: false,
 		},
 	]);
 
@@ -137,43 +107,10 @@ export default function WorkerDetails({ worker }) {
 		);
 	};
 
-	const startEdit = (id) => {
-		setServices((prev) =>
-			prev.map((s) => (s.id === id ? { ...s, editing: true } : s)),
-		);
-	};
-
-	const cancelEdit = (id) => {
-		setServices((prev) =>
-			prev.map((s) => (s.id === id ? { ...s, editing: false } : s)),
-		);
-	};
-
 	const updateField = (id, field, value) => {
 		setServices((prev) =>
 			prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)),
 		);
-	};
-
-	const updateWarranty = (id, field, value) => {
-		setServices((prev) =>
-			prev.map((s) =>
-				s.id === id
-					? {
-						...s,
-						warranty: {
-							...(s.warranty || { value: "", unit: "days" }),
-							[field]: value,
-						},
-					}
-					: s,
-			),
-		);
-	};
-
-	const formatWarranty = (warranty) => {
-		if (!warranty || !warranty.value) return "No warranty";
-		return `${warranty.value} ${warranty.unit}`;
 	};
 
 	return (
@@ -234,16 +171,6 @@ export default function WorkerDetails({ worker }) {
 										/>
 									</div>
 								</button>
-
-								<button
-									onClick={() => toggleOpen(s.id)}
-									className="flex items-center gap-1 text-sm"
-								>
-									Details
-									<ChevronDown
-										className={`h-4 w-4 ${s.open ? "rotate-180" : ""}`}
-									/>
-								</button>
 							</div>
 						</div>
 
@@ -260,21 +187,6 @@ export default function WorkerDetails({ worker }) {
 								) : (
 									<p>{s.details}</p>
 								)}
-
-								<div>
-									Warranty: <span>{formatWarranty(s.warranty)}</span>
-								</div>
-
-								<div className="flex justify-end gap-3">
-									{!s.editing ? (
-										<button onClick={() => startEdit(s.id)}>Edit</button>
-									) : (
-										<>
-											<button onClick={() => cancelEdit(s.id)}>Cancel</button>
-											<button onClick={() => cancelEdit(s.id)}>Save</button>
-										</>
-									)}
-								</div>
 							</div>
 						)}
 					</div>
