@@ -6,10 +6,34 @@ import { apiRequest } from "@/utils/api";
 
 export default function WorkerDetails({ worker }) {
 	const [isSaved, setSaved] = useState(false);
+	const oal = [
+		"consult",
+		"hourly",
+		"fan-install",
+		"fan-repair",
+		"light",
+		"home-wiring",
+		"switch-install",
+		"switch-mcb",
+		"switch-repair",
+		"invereter-install",
+		"invereter-maintainance",
+		"cooler-repair",
+		"motor-rewinding",
+	];
 
 	const handleSave = async () => {
 		try {
 			setSaved(true);
+			const payload= {};
+			oal.forEach((item, index) => {
+				payload[item] = {
+					visible: services[index]["enabled"],
+					price: services[index]["price"],
+					details: services[index]["details"],
+				};
+			});
+
 			const res = apiRequest("/update", "POST", payload);
 		} catch (error) {
 			console.log(error);
