@@ -1,28 +1,30 @@
-"use client"
+import { memo } from 'react'
 
-export default function OrderHistoryCard() {
+const OrderHistoryCard = memo(function OrderHistoryCard() {
   return (
-    <div className="mt-4 rounded-lg border border-gray-200 bg-white p-4">
-      <h3 className="mb-3 text-sm font-semibold text-gray-900">
+    <div className="mt-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+      <h3 className="mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
         Order Timeline
       </h3>
 
-      <div className="space-y-3 text-sm text-gray-700">
-        <div className="flex gap-2">
-          <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
-          <p>Order placed at 9:05 PM</p>
+      <div className="space-y-4 text-sm text-slate-600">
+        <div className="flex gap-3">
+          <span className="mt-1 h-2 w-2 rounded-full bg-slate-300 shadow-sm" />
+          <p className="font-medium">Order placed at 9:10 PM</p>
         </div>
 
-        <div className="flex gap-2">
-          <span className="mt-1 h-2 w-2 rounded-full bg-gray-400" />
-          <p>Order accepted by vendor</p>
+        <div className="flex gap-3">
+          <span className="mt-1 h-2 w-2 rounded-full bg-slate-300 shadow-sm" />
+          <p className="font-medium">Order accepted by vendor</p>
         </div>
 
-        <div className="flex gap-2">
-          <span className="mt-1 h-2 w-2 rounded-full bg-green-500" />
-          <p className="font-medium">Preparing food</p>
+        <div className="flex gap-3">
+          <span className="mt-1 h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)] animate-pulse" />
+          <p className="font-bold text-slate-800">Preparing your order</p>
         </div>
       </div>
     </div>
   )
-}
+})
+
+export default OrderHistoryCard;

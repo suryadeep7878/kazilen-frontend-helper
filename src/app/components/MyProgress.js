@@ -1,6 +1,4 @@
-'use client'
-
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useTransition, memo } from 'react'
 
 const PROGRESS_DATA = {
   today: { earnings: 0, hours: '0:00 hrs', orders: 0 },
@@ -14,27 +12,37 @@ const PERIODS = [
 
 const BUTTON_CLASSES = {
   active:
-    'bg-sky-500 text-white shadow-md ring-2 ring-sky-400 scale-105',
+    'bg-sky-500 text-white shadow-md ring-2 ring-sky-300 scale-105',
   inactive:
-    'bg-sky-100 text-sky-800 hover:bg-sky-200'
+    'bg-sky-50 text-sky-700 hover:bg-sky-100'
 }
 
 export default function MyProgress() {
   const [period, setPeriod] = useState('today')
+  const [isPending, startTransition] = useTransition()
 
   const current = useMemo(() => PROGRESS_DATA[period], [period])
 
+  const handlePeriodChange = (key) => {
+    startTransition(() => {
+      setPeriod(key)
+    })
+  }
+
   return (
     <section className="w-full mx-auto space-y-4">
-      <div className="bg-white rounded-md shadow p-4">
+      <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 p-5 transition-opacity duration-300 ${isPending ? 'opacity-60' : 'opacity-100'}`}>
         {/* Header */}
-        <header className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-700">
-            My Progress
-          </h3>
+        <header className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+              My Progress
+            </h3>
+            {isPending && <div className="w-3 h-3 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />}
+          </div>
 
           <div
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-slate-50 p-1 rounded-full border border-slate-100"
             role="tablist"
             aria-label="Progress period"
           >
@@ -44,13 +52,12 @@ export default function MyProgress() {
               return (
                 <button
                   key={key}
-                  onClick={() => setPeriod(key)}
+                  onClick={() => handlePeriodChange(key)}
                   role="tab"
                   aria-selected={isActive}
-                  className={`px-4 py-1.5 rounded-full text-sm font-semibold
+                  className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider
                     transition-all duration-200 ease-out
                     ${isActive ? BUTTON_CLASSES.active : BUTTON_CLASSES.inactive}`}
-                  style={{ minWidth: 92 }}
                 >
                   {label}
                 </button>
@@ -60,8 +67,8 @@ export default function MyProgress() {
         </header>
 
         {/* Stats */}
-        <div className="bg-gray-100 rounded-md p-4">
-          <div className="flex items-stretch">
+        <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 shadow-inner">
+          <div className="flex items-stretch justify-around">
             <Stat
               label="Earnings"
               value={formatINRCurrency(current.earnings)}
@@ -90,25 +97,25 @@ function formatINRCurrency(amount) {
 
 /* ---------- UI components ---------- */
 
-function Stat({ label, value }) {
+const Stat = memo(function Stat({ label, value }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center py-3">
-      <div className="text-2xl font-bold text-gray-800">
+    <div className="flex-1 flex flex-col items-center justify-center">
+      <div className="text-xl font-black text-slate-800 tracking-tight">
         {value}
       </div>
-      <div className="text-sm text-gray-600 mt-1">
+      <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
         {label}
       </div>
     </div>
   )
-}
+})
 
-function Divider() {
+const Divider = memo(function Divider() {
   return (
     <div
-      className="w-px bg-gray-300"
+      className="w-px bg-slate-200 mx-2 self-stretch"
       role="separator"
       aria-hidden="true"
     />
   )
-}
+})

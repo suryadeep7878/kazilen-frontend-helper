@@ -15,7 +15,7 @@ const runtimeCaching = [
   },
   // 2. Images (Optimized only)
   {
-    urlPattern: /^https?.*\.(?:webp|avif|jpeg|jpg)$/i,
+    urlPattern: /^https?.*\.(?:webp|avif|jpeg|jpg|png|svg)$/i,
     handler: 'StaleWhileRevalidate',
     options: {
       cacheName: 'kazilen-images-v1',

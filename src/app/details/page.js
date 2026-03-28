@@ -1,4 +1,10 @@
-import WorkerDetails from "../components/WorkerDetails"
+"use client";
+
+import dynamic from 'next/dynamic'
+const WorkerDetails = dynamic(() => import("../components/WorkerDetails"), {
+  loading: () => <div className="animate-pulse bg-gray-200 h-96 rounded-3xl" />,
+  ssr: false
+})
 
 export default function Page() {
   const worker = {

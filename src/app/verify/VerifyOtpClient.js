@@ -176,9 +176,8 @@ export default function VerifyOtpClient() {
           <button
             disabled={!resendEnabled || resending}
             onClick={handleResend}
-            className={`font-medium ${
-              resendEnabled ? "text-blue-600 underline" : "text-gray-400"
-            }`}
+            className={`font-medium ${resendEnabled ? "text-blue-600 underline" : "text-gray-400"
+              }`}
           >
             {resending ? "Resending…" : "Resend"}
           </button>
@@ -191,9 +190,8 @@ export default function VerifyOtpClient() {
       <button
         onClick={handleVerify}
         disabled={loading}
-        className={`w-full mt-6 bg-yellow-400 text-black font-semibold py-3 rounded-xl ${
-          loading ? "opacity-70 cursor-not-allowed" : "hover:bg-yellow-500"
-        }`}
+        className={`w-full mt-6 bg-yellow-400 text-black font-semibold py-3 rounded-xl ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-yellow-500"
+          }`}
       >
         {loading ? "Verifying…" : "Verify"}
       </button>

@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
-export default function Header({ size = 40 }) {
+export default function Header({ size = 40, imageSrc }) {
   const router = useRouter()
   const [online, setOnline] = useState(true)
   const [initial, setInitial] = useState('•')
@@ -50,11 +51,11 @@ export default function Header({ size = 40 }) {
       <button
         onClick={toggle}
         aria-pressed={online}
-        className="relative flex items-center rounded-full focus:outline-none select-none"
+        className="relative flex items-center rounded-full focus:outline-none select-none transition-colors duration-300"
         style={{
           width: pillWidth,
           height: pillHeight,
-          background: online ? '#34D399' : '#E5E7EB',
+          background: online ? '#10B981' : '#E5E7EB',
         }}
       >
         {/* knob */}
@@ -88,9 +89,11 @@ export default function Header({ size = 40 }) {
         >
           <span
             style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: online ? '#ffffff' : '#111827',
+              fontSize: 10,
+              fontWeight: 800,
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              color: online ? '#ffffff' : '#4B5563',
               userSelect: 'none',
             }}
           >
@@ -102,25 +105,29 @@ export default function Header({ size = 40 }) {
       {/* Avatar moved to right */}
       <button
         onClick={openProfile}
-        className="ml-auto relative rounded-full flex items-center justify-center font-semibold text-orange-600 bg-orange-100"
-        style={{ width: size, height: size, fontSize: size / 2 }}
+        className="ml-auto relative rounded-full flex items-center justify-center font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+        style={{ width: size, height: size, fontSize: size / 2.5 }}
         title="Open profile"
         aria-label="Open profile"
       >
-        {initial}
+        {imageSrc ? (
+          <Image 
+            src={imageSrc} 
+            alt="Profile" 
+            fill 
+            className="object-cover"
+            sizes={`${size}px`}
+          />
+        ) : (
+          initial
+        )}
 
         {/* status dot */}
         <span
-          style={{
-            position: 'absolute',
-            right: 2,
-            bottom: 2,
-            width: 10,
-            height: 10,
-            borderRadius: 9999,
-            border: '2px solid white',
-            background: online ? '#10B981' : '#9CA3AF',
-          }}
+          className={`absolute right-1 bottom-1 width-2.5 height-2.5 rounded-full border-2 border-white transition-colors duration-300 ${
+            online ? 'bg-green-500' : 'bg-gray-400'
+          }`}
+          style={{ width: 10, height: 10 }}
         />
       </button>
     </div>

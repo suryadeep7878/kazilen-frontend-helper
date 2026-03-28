@@ -3,17 +3,25 @@
 
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, memo, useMemo } from 'react'
 import { deleteItem } from '../lib/api'
 
-export default function ItemCard({ item = {}, onDeleted } = {}) {
+const ItemCard = memo(function ItemCard({ item = {}, onDeleted } = {}) {
   const router = useRouter()
   const [loadingDelete, setLoadingDelete] = useState(false)
   const [error, setError] = useState(null)
 
-  const priceNumber = item.price != null ? Number(item.price) : null
-  const priceText =
-    priceNumber == null || Number.isNaN(priceNumber) ? '—' : priceNumber.toFixed(2)
+  const priceText = useMemo(() => {
+    const priceNumber = item.price != null ? Number(item.price) : null
+    return priceNumber == null || Number.isNaN(priceNumber) ? '—' : priceNumber.toFixed(2)
+  }, [item.price]);
+
+  const shortDesc = useMemo(() => {
+    if (!item.description) return '';
+    return item.description.length > 120
+      ? item.description.slice(0, 120) + '…'
+      : item.description
+  }, [item.description]);
 
   const handleEdit = () => {
     if (item?.id) router.push(`/edit/${item.id}`)
@@ -38,42 +46,38 @@ export default function ItemCard({ item = {}, onDeleted } = {}) {
   }
 
   const imageSrc = item.imageUrl || item.image || '/door-repair.jpg'
-  const shortDesc = item.description
-    ? item.description.length > 120
-      ? item.description.slice(0, 120) + '…'
-      : item.description
-    : ''
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg shadow-sm flex justify-between items-center">
-      <div className="flex-1 pr-4">
-        <p className="text-sm text-gray-500">{item.category ?? 'Uncategorized'}</p>
-        <p className="font-semibold text-lg">{item.name ?? 'Unnamed item'}</p>
-        {shortDesc && <p className="text-gray-700 mt-1 text-sm">{shortDesc}</p>}
-        <p className="text-gray-800 font-bold mt-3">₹{priceText}</p>
+    <div className="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="flex-1 pr-4 min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-blue-500 mb-1">{item.category ?? 'Uncategorized'}</p>
+        <p className="font-bold text-gray-900 line-clamp-1">{item.name ?? 'Unnamed item'}</p>
+        {shortDesc && <p className="text-gray-500 mt-1 text-xs line-clamp-2 leading-relaxed">{shortDesc}</p>}
+        <p className="text-blue-600 font-extrabold mt-3 text-lg">₹{priceText}</p>
         {item.createdAt && (
-          <p className="text-xs text-gray-500 mt-1">
-            Added: {new Date(item.createdAt).toLocaleString()}
+          <p className="text-[10px] text-gray-400 mt-1">
+            Added: {new Date(item.createdAt).toLocaleDateString()}
           </p>
         )}
-        {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
+        {error && <p className="text-[10px] text-red-500 mt-2 font-medium bg-red-50 px-2 py-1 rounded inline-block">{error}</p>}
       </div>
 
-      <div className="flex flex-col items-end">
-        <div className="w-[100px] h-[80px] relative rounded-md overflow-hidden">
+      <div className="flex flex-col items-end flex-shrink-0">
+        <div className="w-24 h-20 relative rounded-xl overflow-hidden bg-gray-100 shadow-inner">
           <Image
             src={imageSrc}
             alt={item.name ?? 'item image'}
             fill
-            style={{ objectFit: 'cover' }}
-            sizes="100px"
+            className="object-cover"
+            sizes="96px"
+            loading="lazy"
           />
         </div>
 
-        <div className="mt-3 flex gap-3">
+        <div className="mt-3 flex gap-4">
           <button
             onClick={handleEdit}
-            className="text-black font-semibold hover:underline"
+            className="text-xs font-bold text-gray-600 hover:text-blue-600 transition-colors uppercase tracking-widest"
           >
             Edit
           </button>
@@ -81,12 +85,14 @@ export default function ItemCard({ item = {}, onDeleted } = {}) {
           <button
             onClick={handleDelete}
             disabled={loadingDelete}
-            className={`text-sm px-3 py-1 rounded ${loadingDelete ? 'opacity-60' : 'text-red-600 hover:underline'}`}
+            className={`text-xs font-bold uppercase tracking-widest transition-colors ${loadingDelete ? 'text-gray-300' : 'text-red-500 hover:text-red-700'}`}
           >
-            {loadingDelete ? 'Deleting…' : 'Delete'}
+            {loadingDelete ? '...' : 'Delete'}
           </button>
         </div>
       </div>
     </div>
   )
-}
+});
+
+export default ItemCard;

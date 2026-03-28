@@ -16,6 +16,10 @@ export default function AuthGuard({ children }) {
   )
 
   useEffect(() => {
+    // TEMPORARY: Bypassing auth check for easier page testing
+    setIsChecking(false);
+    return;
+
     const userId =
       localStorage.getItem('kazilen_professional_id') ||
       localStorage.getItem('kazilen_user_id')

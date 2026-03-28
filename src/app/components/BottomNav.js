@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Info, Wallet, ClipboardList } from 'lucide-react'
+import { memo } from 'react'
 
 export default function BottomNav() {
   const pathname = usePathname()
@@ -27,24 +28,14 @@ export default function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-sm"
+      className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border-t border-gray-100 shadow-lg"
       style={{ zIndex: 50 }}
       aria-label="Bottom navigation"
     >
-      <div className="max-w-3xl mx-auto">
-        <div className="h-16 flex items-center">
+      <div className="max-w-3xl mx-auto px-4">
+        <div className="h-20 flex items-center justify-around">
           {navItems.map((item, index) => (
-            <div key={item.href} className="flex items-center flex-1">
-              {/* Nav Item */}
-              <div className="flex-1 flex items-center justify-center">
-                <NavLink item={item} pathname={pathname} />
-              </div>
-
-              {/* Divider (except after last item) */}
-              {index !== navItems.length - 1 && (
-                <div className="w-px h-6 bg-gray-300" />
-              )}
-            </div>
+            <NavLink key={item.href} item={item} pathname={pathname} />
           ))}
         </div>
       </div>
@@ -53,23 +44,25 @@ export default function BottomNav() {
 }
 
 // Small helper so we don't repeat
-function NavLink({ item, pathname }) {
+const NavLink = memo(function NavLink({ item, pathname }) {
   const isActive = pathname === item.href
   const Icon = item.icon
 
   return (
-    <Link href={item.href} className="flex flex-col items-center">
-      <Icon
-        size={20}
-        className={isActive ? 'text-pink-500' : 'text-gray-400'}
-      />
+    <Link 
+      href={item.href} 
+      className={`flex flex-col items-center gap-1.5 transition-all duration-300 ${isActive ? 'scale-110' : 'opacity-60 scale-95'}`}
+    >
+      <div className={`p-2 rounded-2xl transition-colors duration-300 ${isActive ? 'bg-indigo-50 text-indigo-600' : 'text-slate-400'}`}>
+        <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+      </div>
       <span
-        className={`text-sm ${
-          isActive ? 'text-pink-500 font-semibold' : 'text-gray-500'
+        className={`text-[10px] font-extrabold uppercase tracking-widest ${
+          isActive ? 'text-indigo-600' : 'text-slate-400'
         }`}
       >
         {item.name}
       </span>
     </Link>
   )
-}
+})

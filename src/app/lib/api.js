@@ -28,7 +28,7 @@ async function jsonOrNull(res) {
   }
 }
 
-async function api(
+export async function api(
   path,
   { method = 'GET', body, headers = {}, timeoutMs = DEFAULT_TIMEOUT_MS, credentials = 'include' } = {}
 ) {
