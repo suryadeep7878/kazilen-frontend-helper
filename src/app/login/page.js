@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { checkPhone } from "../lib/api"; // adjust if your path differs
 import { apiRequest } from "@/utils/api";
+import { SkeletonButton } from "../../components/Skeletons";
 
 const LEGACY_USER_KEYS = [
 	"userId",
@@ -106,14 +107,17 @@ export default function LoginPage() {
 					className="w-full px-4 py-3 border border-black rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-500 text-sm mb-4"
 				/>
 
-				<button
-					onClick={handleContinue}
-					disabled={loading}
-					className={`w-full bg-yellow-400 text-black font-semibold py-3 rounded-xl transition ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-yellow-500"
-						}`}
-				>
-					{loading ? "Checking…" : "Continue"}
-				</button>
+				{loading ? (
+					<SkeletonButton className="w-full" text="Checking..." />
+				) : (
+					<button
+						onClick={handleContinue}
+						disabled={loading}
+						className="w-full bg-yellow-400 text-black font-semibold py-3 rounded-xl transition hover:bg-yellow-500"
+					>
+						Continue
+					</button>
+				)}
 			</div>
 
 			<div className="mt-6 w-full max-w-sm flex gap-3">

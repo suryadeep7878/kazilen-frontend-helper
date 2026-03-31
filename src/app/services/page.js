@@ -6,7 +6,7 @@ import { fetchServices, bookService } from '../../lib/api';
 import { useUrlState } from '../../hooks/useUrlState';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { useScrollRestore } from '../../hooks/useScrollRestore';
-import { PageSkeleton } from '../../components/Skeletons';
+import { PageSkeleton, ListSkeleton } from '../../components/Skeletons';
 import { Suspense, useTransition } from 'react';
 import ServiceItem from '../components/ServiceItem';
 
@@ -69,14 +69,11 @@ function ServicesContent() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-gray-900">Services</h1>
-            {isPending && (
-              <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-            )}
           </div>
           <button 
             onClick={() => refetch()} 
             disabled={isFetching}
-            className={`p-2 bg-gray-200 rounded-full active:scale-95 transition ${isFetching ? 'animate-spin' : ''}`}
+            className={`p-2 bg-gray-200 rounded-full active:scale-95 transition ${isFetching ? 'opacity-50' : ''}`}
           >
             ↻
           </button>
@@ -106,12 +103,12 @@ function ServicesContent() {
            </div>
         )}
 
-        {isFetching && !isLoading && !isPending && (
-          <div className="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-4 animate-pulse">Refreshing data...</div>
+        {(isFetching || isPending) && !isLoading && (
+          <ListSkeleton count={services?.length || 4} />
         )}
 
         <div className="flex flex-col gap-4">
-          {services?.length === 0 && !isError && (
+          {services?.length === 0 && !isError && !isFetching && !isPending && (
             <div className="text-center py-20">
               <p className="text-gray-500 font-medium">No services found in this category.</p>
               <button 
@@ -123,7 +120,7 @@ function ServicesContent() {
             </div>
           )}
 
-          {services?.map(service => (
+          {!(isFetching || isPending) && services?.map(service => (
             <ServiceItem 
               key={service.id} 
               service={service} 

@@ -1,8 +1,10 @@
 "use client";
 
 import dynamic from 'next/dynamic'
+import { DetailsSkeleton } from '../../components/Skeletons'
+
 const WorkerDetails = dynamic(() => import("../components/WorkerDetails"), {
-  loading: () => <div className="animate-pulse bg-gray-200 h-96 rounded-3xl" />,
+  loading: () => <DetailsSkeleton />,
   ssr: false
 })
 

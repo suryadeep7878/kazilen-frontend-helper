@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Header from '../components/Header'
+import { EditFormSkeleton } from '../../components/Skeletons'
 import { getItem, updateItem, deleteItem } from '../lib/api'
 
 export default function EditItemPage() {
@@ -108,11 +109,7 @@ export default function EditItemPage() {
   }
 
   if (loading) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <div>Loading item...</div>
-      </main>
-    )
+    return <EditFormSkeleton />
   }
 
   return (

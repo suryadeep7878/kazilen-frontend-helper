@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { apiRequest } from '@/utils/api'
+import { SkeletonButton } from '../../components/Skeletons'
 
 export default function CreateAccountClient({ phoneFromQuery }) {
   const router = useRouter()
@@ -161,14 +162,18 @@ export default function CreateAccountClient({ phoneFromQuery }) {
         )}
       </div>
 
-      <div className="px-4 pb-6">
-        <button
-          onClick={handleCreateAccount}
-          disabled={!canSubmit || loading}
-          className={`w-full py-3 rounded-xl font-medium ${canSubmit ? 'bg-yellow-400 hover:bg-yellow-500 text-black' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
-        >
-          {loading ? 'Creating…' : 'Create Account'}
-        </button>
+      <div className="px-4 mt-6 pb-6">
+        {loading ? (
+          <SkeletonButton className="w-full" text="Creating..." />
+        ) : (
+          <button
+            onClick={handleCreateAccount}
+            disabled={!canSubmit}
+            className={`w-full py-3 rounded-xl font-medium ${canSubmit ? 'bg-yellow-400 hover:bg-yellow-500 text-black' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+          >
+            Create Account
+          </button>
+        )}
       </div>
     </div>
   )
