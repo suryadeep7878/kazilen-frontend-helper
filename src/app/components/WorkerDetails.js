@@ -12,7 +12,7 @@ export default function WorkerDetails({ worker }) {
 	const handleSave = async () => {
 		try {
 			setSaved(true);
-			const res = apiRequest("/update", "POST", services);
+			const res = apiRequest("/update", "POST", {sub_categories: services, id: storedId});
 		} catch (error) {
 			console.log(error);
 		} finally {
