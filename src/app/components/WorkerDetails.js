@@ -67,24 +67,24 @@ export default function WorkerDetails({ worker }) {
 					>
 						<div className="flex justify-between items-start gap-4">
 							<div className="flex-1 space-y-2">
-								<h3 className="font-medium">{s[0]}</h3>
+								<h3 className="font-medium">{s.name}</h3>
 
 								{s.editing ? (
 									<input
 										type="number"
-										value={s[1].price}
-										onChange={(e) => updateField(s.id, "price", e.target.value)}
+										value={s.price}
+										onChange={(e) => updateField(index, "price", e.target.value)}
 										className="w-36 h-10 rounded-lg border px-3"
 									/>
 								) : (
 									<p className="text-lg font-semibold text-indigo-600">
-										₹{s[1].price}
+										₹{s.price}
 									</p>
 								)}
 							</div>
 
 							<div className="flex flex-col items-end gap-3">
-								<button onClick={() => toggleEnabled(s.id)}>
+								<button onClick={() => toggleEnabled(index)}>
 									<div
 										className={`h-6 w-11 rounded-full relative ${s.enabled ? "bg-indigo-600" : "bg-slate-300"
 											}`}
@@ -102,14 +102,14 @@ export default function WorkerDetails({ worker }) {
 							<div className="mt-4 bg-slate-50 p-4 rounded-xl space-y-4">
 								{s.editing ? (
 									<textarea
-										value={s[1].details}
+										value={s.details}
 										onChange={(e) =>
-											updateField(s.id, "details", e.target.value)
+											updateField(index, "details", e.target.value)
 										}
 										className="w-full border rounded-lg p-2"
 									/>
 								) : (
-									<p>{s[1].details}</p>
+									<p>{s.details}</p>
 								)}
 							</div>
 						)}
