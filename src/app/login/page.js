@@ -8,7 +8,7 @@ import { apiRequest } from "@/utils/api";
 import { SkeletonButton } from "../../components/Skeletons";
 
 const LEGACY_USER_KEYS = [
-	"userId",
+	"userID",
 	"kazilen_user_id",
 	"kazilen_userId",
 	"kazilen_user_id_v2",
@@ -44,6 +44,8 @@ export default function LoginPage() {
 			if (savedPhone && savedPhone !== phone) {
 				clearSavedUserKeys();
 			}
+			const fphone =`91${phone}`
+			const _ = apiRequest('/send-otp', 'POST', {phone : fphone})
 		} catch (err) {
 			alert(err?.message || "Failed to check phone");
 		} finally {
