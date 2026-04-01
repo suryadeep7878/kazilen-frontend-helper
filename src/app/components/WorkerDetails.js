@@ -6,13 +6,16 @@ import { apiRequest } from "@/utils/api";
 
 export default function WorkerDetails({ worker }) {
 	const [isSaved, setSaved] = useState(false);
-	const storedId = localStorage.getItem('userID');
-	const data = apiRequest('/getSubCat', 'POST', storedId)
+	const storedId = localStorage.getItem("userID");
+	const data = apiRequest("/getSubCat", "POST", { id: storedId });
 
 	const handleSave = async () => {
 		try {
 			setSaved(true);
-			const res = apiRequest("/update", "POST", {sub_categories: services, id: storedId});
+			const res = apiRequest("/update", "POST", {
+				sub_categories: services,
+				id: storedId,
+			});
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -20,15 +23,11 @@ export default function WorkerDetails({ worker }) {
 		}
 	};
 
-	const [services, setServices] = useState([data])
+	const [services, setServices] = useState(Object.entries(data));
 
 	const toggleEnabled = (id) => {
 		setServices((prev) =>
-			prev.map((s) =>
-				s.id === id
-					? { ...s, enabled: !s.visible}
-					: s,
-			),
+			prev.map((s) => (s.id === id ? { ...s, enabled: !s.visible } : s)),
 		);
 	};
 
@@ -45,7 +44,7 @@ export default function WorkerDetails({ worker }) {
 				<div className="flex items-center justify-between">
 					<div>
 						<h1 className="text-lg font-semibold">{worker.name}</h1>
-						<p className="text-sm text-slate-500">{worker.role}</p>
+						<p className="text-sm text-slate-500">electrician</p>
 					</div>
 
 					<div className="flex flex-col items-center">
@@ -60,26 +59,26 @@ export default function WorkerDetails({ worker }) {
 
 			{/* SERVICES */}
 			<div className="space-y-4">
-				{services.map((s) => (
+				{services.map((s, index) => (
 					<div
-						key={s.id}
+						key={index}
 						className={`rounded-2xl bg-white px-6 py-5 border shadow-sm ${!s.enabled ? "opacity-60" : ""
 							}`}
 					>
 						<div className="flex justify-between items-start gap-4">
 							<div className="flex-1 space-y-2">
-								<h3 className="font-medium">{s.name}</h3>
+								<h3 className="font-medium">{s[0]}</h3>
 
 								{s.editing ? (
 									<input
 										type="number"
-										value={s.price}
+										value={s[1].price}
 										onChange={(e) => updateField(s.id, "price", e.target.value)}
 										className="w-36 h-10 rounded-lg border px-3"
 									/>
 								) : (
 									<p className="text-lg font-semibold text-indigo-600">
-										₹{s.price}
+										₹{s[1].price}
 									</p>
 								)}
 							</div>
@@ -103,14 +102,14 @@ export default function WorkerDetails({ worker }) {
 							<div className="mt-4 bg-slate-50 p-4 rounded-xl space-y-4">
 								{s.editing ? (
 									<textarea
-										value={s.details}
+										value={s[1].details}
 										onChange={(e) =>
 											updateField(s.id, "details", e.target.value)
 										}
 										className="w-full border rounded-lg p-2"
 									/>
 								) : (
-									<p>{s.details}</p>
+									<p>{s[1].details}</p>
 								)}
 							</div>
 						)}
