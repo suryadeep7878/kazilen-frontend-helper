@@ -70,7 +70,7 @@ export default function VerifyOtpClient() {
         const result = await apiRequest("/check", "POST", { phone });
 
         if (result?.exists) {
-					localStorage.setItem("userID", result,id)
+					localStorage.setItem("userID", result.id)
           router.push("/");
         } else {
 					console.log(phone)
