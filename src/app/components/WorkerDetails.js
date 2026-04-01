@@ -6,7 +6,7 @@ import { apiRequest } from "@/utils/api";
 
 export default function WorkerDetails({ worker }) {
 	const [isSaved, setSaved] = useState(false);
-	const storedId = localStorage.getItem('worker_id');
+	const storedId = localStorage.getItem('userID');
 	const data = apiRequest('/getSubCat', 'POST', storedId)
 
 	const handleSave = async () => {
