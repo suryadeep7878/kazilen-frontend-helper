@@ -11,6 +11,8 @@ export default function VerifyOtpClient() {
   const params = useSearchParams();
   const phone = params.get("phone");
 
+	console.log(phone)
+
   const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
   const [seconds, setSeconds] = useState(30);
   const [resendEnabled, setResendEnabled] = useState(false);
@@ -71,6 +73,7 @@ export default function VerifyOtpClient() {
 					localStorage.setItem("userID", result,id)
           router.push("/");
         } else {
+					console.log(phone)
           router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
         }
 
