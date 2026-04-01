@@ -57,7 +57,7 @@ export default function CreateAccountClient({ phoneFromQuery }) {
         localStorage.setItem('kazilen_professional_id', idStr)
         localStorage.setItem('professionalId', idStr)
         localStorage.setItem('kazilen_user_id', idStr)
-        localStorage.setItem('userId', idStr)
+        localStorage.setItem('userID', idStr)
       }
 
       const finalPhone = created?.phone || phone

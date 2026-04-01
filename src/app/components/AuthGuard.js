@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 
 // Pages that do NOT require authentication
-const PUBLIC_ROUTES = ['/login', '/create-account']
+const PUBLIC_ROUTES = ['/login', '/create-account', '/verify']
 
 export default function AuthGuard({ children }) {
   const router = useRouter()

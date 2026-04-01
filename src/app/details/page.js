@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { DetailsSkeleton } from '../../components/Skeletons'
+import { apiRequest } from '@/utils/api';
 
 const WorkerDetails = dynamic(() => import("../components/WorkerDetails"), {
   loading: () => <DetailsSkeleton />,
@@ -9,6 +10,8 @@ const WorkerDetails = dynamic(() => import("../components/WorkerDetails"), {
 })
 
 export default function Page() {
+	const userID = localStorage.getItem('userID')
+  const res = apiRequest('/get-profile', 'POST', {userID: userID})
   const worker = {
     name: "Rajesh Kumar", // ✅ fixed name here
     role: "Electrician",
