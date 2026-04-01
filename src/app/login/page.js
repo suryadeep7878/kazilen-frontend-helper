@@ -8,7 +8,7 @@ import { apiRequest } from "@/utils/api";
 import { SkeletonButton } from "../../components/Skeletons";
 
 const LEGACY_USER_KEYS = [
-	"userId",
+	"userID",
 	"kazilen_user_id",
 	"kazilen_userId",
 	"kazilen_user_id_v2",
@@ -38,34 +38,18 @@ export default function LoginPage() {
 		}
 		try {
 			setLoading(true);
-
 			const savedPhone =
 				localStorage.getItem("kazilen_professional_phone") ||
 				localStorage.getItem("kazilen_user_phone");
 			if (savedPhone && savedPhone !== phone) {
 				clearSavedUserKeys();
 			}
-
-			const result = await apiRequest("/check", "POST", {"phone": phone});
-
-			localStorage.setItem("kazilen_professional_phone", phone);
-			localStorage.setItem("kazilen_user_phone", phone);
-
-			if (result?.exists) {
-				const profId = result.id;
-				if (profId) {
-					localStorage.setItem("kazilen_professional_id", String(profId));
-					localStorage.setItem("professionalId", String(profId));
-					localStorage.setItem("kazilen_user_id", String(profId));
-					localStorage.setItem("userId", String(profId));
-				}
-				router.push("/");
-			} else {
-				router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
-			}
+			const fphone =`91${phone}`
+			const _ = apiRequest('/send-otp', 'POST', {phone : fphone})
 		} catch (err) {
 			alert(err?.message || "Failed to check phone");
 		} finally {
+			router.push(`/verify?phone=${encodeURIComponent(phone)}`);
 			setLoading(false);
 		}
 	};
