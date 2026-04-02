@@ -1,30 +1,92 @@
-import { memo } from 'react'
+"use client";
 
-const OrderHistoryCard = memo(function OrderHistoryCard() {
-  return (
-    <div className="mt-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-      <h3 className="mb-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
-        Order Timeline
-      </h3>
+import { memo } from "react";
 
-      <div className="space-y-4 text-sm text-slate-600">
-        <div className="flex gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-slate-300 shadow-sm" />
-          <p className="font-medium">Order placed at 9:10 PM</p>
-        </div>
+const OrderHistoryCard = memo(function OrderHistoryCard({ orders }) {
 
-        <div className="flex gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-slate-300 shadow-sm" />
-          <p className="font-medium">Order accepted by vendor</p>
-        </div>
+  const getStatusStyle = (s) => {
+    switch (s) {
+      case "completed":
+        return "text-green-600 bg-green-50";
+      case "ongoing":
+        return "text-blue-600 bg-blue-50";
+      case "accepted":
+        return "text-indigo-600 bg-indigo-50";
+      case "rejected":
+        return "text-red-500 bg-red-50";
+      default:
+        return "text-gray-500 bg-gray-100";
+    }
+  };
 
-        <div className="flex gap-3">
-          <span className="mt-1 h-2 w-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)] animate-pulse" />
-          <p className="font-bold text-slate-800">Preparing your order</p>
-        </div>
+  // ✅ Empty state
+  if (!orders || orders.length === 0) {
+    return (
+      <div className="text-center text-slate-400 text-sm py-6">
+        No order history yet
       </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+
+      {orders.map((item) => (
+        <div
+          key={item.id}
+          className="border rounded-xl p-4 bg-white shadow-sm"
+        >
+
+          {/* Top Row */}
+          <div className="flex justify-between items-center mb-1">
+            <p className="font-bold text-slate-800">
+              {item.name}
+            </p>
+
+            <span
+              className={`text-[10px] px-2 py-1 rounded-full font-semibold ${getStatusStyle(item.status)}`}
+            >
+              {item.status?.toUpperCase()}
+            </span>
+          </div>
+
+          {/* Description (optional) */}
+          {item.description && (
+            <p className="text-[10px] text-slate-400 uppercase font-bold">
+              {item.description}
+            </p>
+          )}
+
+          {/* Customer (optional) */}
+          {item.customer && (
+            <p className="text-sm text-slate-600">
+              {item.customer}
+            </p>
+          )}
+
+          {/* Address (optional) */}
+          {item.address && (
+            <p className="text-xs text-slate-400">
+              {item.address}
+            </p>
+          )}
+
+          {/* Bottom Row */}
+          <div className="flex justify-between items-center mt-3">
+            <span className="text-xs text-slate-400">
+              {item.time || "Just now"}
+            </span>
+
+            <span className="font-bold text-indigo-600">
+              ₹{item.price}
+            </span>
+          </div>
+
+        </div>
+      ))}
+
     </div>
-  )
-})
+  );
+});
 
 export default OrderHistoryCard;
