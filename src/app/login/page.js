@@ -44,7 +44,7 @@ export default function LoginPage() {
 			if (savedPhone && savedPhone !== phone) {
 				clearSavedUserKeys();
 			}
-			const _ = apiRequest('/send')
+		//const _ = apiRequest('/send')
 		} catch (err) {
 			alert(err?.message || "Failed to check phone");
 		} finally {
