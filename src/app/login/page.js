@@ -44,8 +44,7 @@ export default function LoginPage() {
 			if (savedPhone && savedPhone !== phone) {
 				clearSavedUserKeys();
 			}
-			const fphone =`91${phone}`
-			const _ = apiRequest('/send-otp', 'POST', {phone : fphone})
+			const _ = apiRequest('/send')
 		} catch (err) {
 			alert(err?.message || "Failed to check phone");
 		} finally {
