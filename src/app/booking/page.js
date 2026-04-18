@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from "react"
+import { useQuery } from "@tanstack/react-query"
 import {
   Phone,
   Home,
@@ -8,46 +9,32 @@ import {
   Wrench,
   IndianRupee,
   CalendarDays,
-  Clock
+  Clock,
+  Loader2
 } from "lucide-react"
+import { apiRequest } from "@/utils/api"
+import { confirmStartPin, confirmEndPin } from "@/lib/bookingApi"
 
 export default function BookingPage() {
-
-  const phoneNumber = "+919876543237"
-
   const [otp, setOtp] = useState(["", "", "", ""])
   const [error, setError] = useState("")
   const [step, setStep] = useState("start") // start → working → end → completed
-
   const inputsRef = useRef([])
 
-  // ⚠️ TEMP (replace with backend)
-  const START_OTP = "1234"
-  const END_OTP = "5678"
+  // 1. Fetch current assigned job
+  const { data: jobData, isLoading: jobLoading } = useQuery({
+    queryKey: ["current-job"],
+    queryFn: () => apiRequest("/current-job"),
+    refetchInterval: 5000,
+  })
 
-  const location = {
-    title: "Andheri East, Mumbai",
-    address: "Flat 402, ABC Apartment",
-    landmark: "Near Metro Station",
-    lat: 19.1136,
-    lng: 72.8697,
-    label: "Home"
-  }
-
-  const service = {
-    name: "Fan Repair",
-    id: "5564645569",
-    category: "Electrical Repair",
-    type: "Inspection & Repair",
-    price: 550,
-    duration: "60-90 mins",
-    image: "https://images.unsplash.com/photo-1581578731548-c64695cc6952"
-  }
-
-  const booking = {
-    date: "3 April 2026",
-    time: "10:15 AM"
-  }
+  // Sync step with booking action
+  useEffect(() => {
+    if (jobData) {
+      if (jobData.action === "STARTED") setStep("working")
+      if (jobData.is_finished) setStep("completed")
+    }
+  }, [jobData])
 
   // Autofocus first input when step changes
   useEffect(() => {
@@ -56,25 +43,29 @@ export default function BookingPage() {
     }
   }, [step])
 
+  if (jobLoading) return <div className="flex h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>
+  if (!jobData) return <div className="p-10 text-center">No active jobs assigned.</div>
+
+  const customer = jobData.customer
+  const worker = jobData.worker
+
   // 📞 Call
   const handleCall = () => {
-    window.location.href = `tel:${phoneNumber}`
+    window.location.href = `tel:${customer.phoneNo}`
   }
 
   // 🗺️ Maps
   const openMaps = () => {
-    window.open(`https://www.google.com/maps?q=${location.lat},${location.lng}`)
+    window.open(`https://www.google.com/maps?q=${customer.address}`)
   }
 
   // OTP input
   const handleChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return
-
     const newOtp = [...otp]
     newOtp[index] = value
     setOtp(newOtp)
     setError("")
-
     if (value && index < 3) {
       inputsRef.current[index + 1]?.focus()
     }
@@ -86,125 +77,75 @@ export default function BookingPage() {
     }
   }
 
-  const resetOtp = () => {
-    setOtp(["", "", "", ""])
-  }
+  const resetOtp = () => setOtp(["", "", "", ""])
 
   // Verify OTP
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const enteredOtp = otp.join("")
-
     if (enteredOtp.length < 4) {
       setError("Enter complete OTP")
       return
     }
 
-    if (step === "start") {
-      if (enteredOtp === START_OTP) {
+    try {
+      if (step === "start") {
+        await confirmStartPin(customer.phoneNo, worker.phoneNo, enteredOtp, jobData.id)
         setStep("working")
         resetOtp()
-      } else {
-        setError("Wrong OTP. Try again.")
-      }
-    }
-
-    else if (step === "end") {
-      if (enteredOtp === END_OTP) {
+      } else if (step === "end") {
+        await confirmEndPin(customer.phoneNo, worker.phoneNo, enteredOtp, jobData.id)
         setStep("completed")
-      } else {
-        setError("Wrong OTP. Try again.")
       }
+    } catch (err) {
+      setError(err.message || "Invalid OTP. Try again.")
     }
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
-
-      {/* Header */}
       <div className="flex justify-between px-4 py-3 bg-white border-b">
-        <h1 className="text-lg font-semibold">Job Details</h1>
-
+        <h1 className="text-lg font-semibold">Current Job</h1>
         <button onClick={handleCall} className="flex items-center gap-2 text-blue-600">
-          <Phone size={18} /> Call
+          <Phone size={18} /> Call Customer
         </button>
       </div>
 
       <div className="p-4 space-y-4">
-
         {/* Customer */}
         <div className="bg-white p-4 rounded-xl flex gap-4 shadow-sm">
-          <img src="https://randomuser.me/api/portraits/men/32.jpg" className="w-14 h-14 rounded-full"/>
+          <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+             {customer.name[0]}
+          </div>
           <div>
-            <p className="font-semibold">Rahul Sharma</p>
-            <p className="text-sm text-gray-600">+91 XXXXXXXX37</p>
-            <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-              <Home size={14}/> Home
-            </div>
+            <p className="font-semibold">{customer.name}</p>
+            <p className="text-sm text-gray-600">{customer.phoneNo}</p>
           </div>
         </div>
 
         {/* Location */}
         <div className="bg-white p-4 rounded-xl shadow-sm">
-          <p className="font-semibold mb-2">Location</p>
-
-          <div className="flex gap-3">
-            <img
-              src={`https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lng}&zoom=15&size=200x200&markers=color:red%7C${location.lat},${location.lng}&key=YOUR_API_KEY`}
-              className="w-24 h-24 rounded-lg"
-            />
-
-            <div>
-              <p className="font-semibold">{location.title}</p>
-              <p className="text-sm text-gray-600">{location.address}</p>
-              <p className="text-sm text-gray-600">{location.landmark}</p>
-            </div>
-          </div>
-
-          <div className="flex justify-between mt-3">
-            <span className="text-sm bg-gray-100 px-3 py-1 rounded">Home</span>
-
-            <button onClick={openMaps} className="text-blue-600 flex items-center gap-1">
-              <Navigation size={16}/> Maps
+          <div className="flex justify-between items-start mb-2">
+            <p className="font-semibold">Service Address</p>
+            <button onClick={openMaps} className="text-blue-600 flex items-center gap-1 text-sm font-medium">
+              <Navigation size={16}/> Directions
             </button>
           </div>
+          <p className="text-sm text-gray-600">{customer.address || "No address provided"}</p>
         </div>
 
         {/* Service */}
-        <div className="bg-white p-4 rounded-xl flex gap-4 shadow-sm">
-          <img src={service.image} className="w-28 h-28 rounded-lg"/>
-
-          <div className="flex-1">
+        <div className="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-500">
             <p className="font-semibold flex gap-2 items-center">
-              <Wrench size={16}/> {service.name}
+              <Wrench size={16}/> {worker.categories || "Service"}
             </p>
-
-            <p className="text-xs bg-gray-100 px-2 py-1 rounded inline-block mt-1">
-              ID: {service.id}
-            </p>
-
-            <p className="text-sm mt-2">₹ {service.price}</p>
-            <p className="text-sm text-gray-500">{service.duration}</p>
-          </div>
-        </div>
-
-        {/* Booking */}
-        <div className="bg-white p-4 rounded-xl shadow-sm">
-          <p className="font-semibold mb-2">Booking</p>
-
-          <p className="flex items-center gap-2">
-            <CalendarDays size={16}/> {booking.date}
-          </p>
-
-          <p className="flex items-center gap-2 mt-2">
-            <Clock size={16}/> {booking.time}
-          </p>
+            <p className="text-xs text-gray-400 mt-1">ID: {jobData.id.split("-")[0]}</p>
         </div>
 
         {/* ===== FLOW SECTION ===== */}
-
         {step === "start" && (
           <OtpBox
-            title="Enter OTP to Start Work"
+            title="Customer's Start PIN"
+            subtitle="Ask the customer for the 4-digit PIN to begin work"
             otp={otp}
             error={error}
             inputsRef={inputsRef}
@@ -215,21 +156,22 @@ export default function BookingPage() {
         )}
 
         {step === "working" && (
-          <div className="bg-green-50 p-4 rounded-xl text-center">
-            <p className="text-green-700 font-semibold mb-3">Work Started ✅</p>
-
+          <div className="bg-emerald-50 p-6 rounded-2xl text-center border border-emerald-100">
+            <p className="text-emerald-700 font-bold text-lg mb-1">Work in Progress</p>
+            <p className="text-emerald-600 text-sm mb-5">You are currently serving {customer.name}</p>
             <button
-              onClick={() => setStep("end")}
-              className="bg-orange-500 text-white px-4 py-2 rounded"
+              onClick={() => { setStep("end"); resetOtp(); }}
+              className="w-full bg-emerald-600 text-white px-4 py-3 rounded-full font-semibold shadow-lg shadow-emerald-200"
             >
-              Complete Work
+              Finish Job
             </button>
           </div>
         )}
 
         {step === "end" && (
           <OtpBox
-            title="Enter OTP to Complete Work"
+            title="Customer's End PIN"
+             subtitle="Ask the customer for the end-service PIN to complete"
             otp={otp}
             error={error}
             inputsRef={inputsRef}
@@ -240,31 +182,31 @@ export default function BookingPage() {
         )}
 
         {step === "completed" && (
-          <div className="bg-green-100 p-4 rounded-xl text-center">
-            <p className="text-green-700 font-semibold">Job Completed 🎉</p>
+          <div className="bg-blue-600 p-8 rounded-2xl text-center text-white shadow-xl">
+             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <IndianRupee size={32} />
+             </div>
+            <p className="text-xl font-bold mb-1">Job Completed!</p>
+            <p className="opacity-80 text-sm">₹ Payment will be processed shortly</p>
+            <button 
+              onClick={() => window.location.href = "/"}
+              className="mt-6 bg-white text-blue-600 px-6 py-2 rounded-full font-bold text-sm"
+            >
+              Back to Dashboard
+            </button>
           </div>
         )}
-
       </div>
     </div>
   )
 }
 
-/* 🔥 Reusable OTP Component */
-function OtpBox({
-  title,
-  otp,
-  error,
-  inputsRef,
-  handleChange,
-  handleKeyDown,
-  handleVerify
-}) {
+function OtpBox({ title, subtitle, otp, error, inputsRef, handleChange, handleKeyDown, handleVerify }) {
   return (
-    <div className="bg-white p-4 rounded-xl text-center shadow-sm">
-      <p className="mb-3 font-semibold">{title}</p>
-
-      <div className="flex justify-center gap-3 mb-3">
+    <div className="bg-white p-6 rounded-2xl text-center shadow-lg border">
+      <p className="font-bold text-lg text-gray-800">{title}</p>
+      <p className="text-sm text-gray-500 mb-6">{subtitle}</p>
+      <div className="flex justify-center gap-4 mb-4">
         {otp.map((d, i) => (
           <input
             key={i}
@@ -273,18 +215,13 @@ function OtpBox({
             maxLength={1}
             onChange={(e) => handleChange(e.target.value, i)}
             onKeyDown={(e) => handleKeyDown(e, i)}
-            className="w-12 h-12 border rounded text-center text-lg focus:ring-2 focus:ring-blue-500"
+            className="w-12 h-14 border-2 rounded-xl text-center text-xl font-bold focus:border-blue-500 focus:ring-0 outline-none transition-colors"
           />
         ))}
       </div>
-
-      {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-
-      <button
-        onClick={handleVerify}
-        className="w-full bg-blue-600 text-white py-2 rounded"
-      >
-        Verify OTP
+      {error && <p className="text-red-500 text-sm font-medium mb-4">{error}</p>}
+      <button onClick={handleVerify} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md active:scale-[0.98] transition-transform">
+        Verify & Continue
       </button>
     </div>
   )
