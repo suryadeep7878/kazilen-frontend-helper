@@ -16,8 +16,7 @@ export default function CreateAccountClient({ phoneFromQuery }) {
 	//const [category, setCategory] = useState('')
 	const [touched, setTouched] = useState({});
 	const [loading, setLoading] = useState(false);
-
-	const phone = phoneFromQuery;
+	const [phone, setPhone] = useState(phoneFromQuery || "");
 
 	const canSubmit = Boolean(
 		name.trim() && dob && gender && /^\d{10}$/.test(phone),
@@ -99,8 +98,9 @@ export default function CreateAccountClient({ phoneFromQuery }) {
 					<input
 						type="tel"
 						value={phone}
-						readOnly
+						onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
 						className="w-full border-none bg-transparent p-0 text-sm text-gray-800 focus:outline-none"
+						placeholder="10-digit mobile number"
 					/>
 				</fieldset>
 				{!/^\d{10}$/.test(phone) && (
