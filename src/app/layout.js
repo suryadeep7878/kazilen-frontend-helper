@@ -6,6 +6,7 @@ import Providers from './providers';
 import NetworkStatus from '../components/NetworkStatus';
 import AuthGuard from './components/AuthGuard';
 import LayoutWrapper from './components/LayoutWrapper';
+import BackgroundPoller from './components/poller';
 
 export const metadata = {
 	title: "Kazilen",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen bg-white">
         <NetworkStatus />
         <Providers>
+					<BackgroundPoller />
           <LocationLoader />
           <AuthGuard>
             <LayoutWrapper>
