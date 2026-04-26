@@ -11,8 +11,6 @@ export default function VerifyOtpClient() {
   const params = useSearchParams();
   const phone = params.get("phone");
 
-	console.log(phone)
-
   const [otpDigits, setOtpDigits] = useState(["", "", "", "", "", ""]);
   const [seconds, setSeconds] = useState(30);
   const [resendEnabled, setResendEnabled] = useState(false);
@@ -70,10 +68,8 @@ export default function VerifyOtpClient() {
         const result = await apiRequest("/check", "POST", { phone });
 
         if (result?.exists) {
-					localStorage.setItem("userID", result.id)
           router.push("/");
         } else {
-					console.log(phone)
           router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
         }
 
@@ -180,8 +176,9 @@ export default function VerifyOtpClient() {
           <button
             disabled={!resendEnabled || resending}
             onClick={handleResend}
-            className={`font-medium ${resendEnabled ? "text-blue-600 underline" : "text-gray-400"
-              }`}
+            className={`font-medium ${
+              resendEnabled ? "text-blue-600 underline" : "text-gray-400"
+            }`}
           >
             {resending ? "Resending…" : "Resend"}
           </button>
@@ -194,8 +191,9 @@ export default function VerifyOtpClient() {
       <button
         onClick={handleVerify}
         disabled={loading}
-        className={`w-full mt-6 bg-yellow-400 text-black font-semibold py-3 rounded-xl ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-yellow-500"
-          }`}
+        className={`w-full mt-6 bg-yellow-400 text-black font-semibold py-3 rounded-xl ${
+          loading ? "opacity-70 cursor-not-allowed" : "hover:bg-yellow-500"
+        }`}
       >
         {loading ? "Verifying…" : "Verify"}
       </button>
