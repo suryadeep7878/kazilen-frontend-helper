@@ -15,7 +15,7 @@ export default function Page() {
   const worker = {
     name: `${res.name}`, // ✅ fixed name here
     role: "Electrician",
-    rating: 4.6,
+    rating: res.rating,
   }
 
   return (
