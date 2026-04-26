@@ -13,9 +13,9 @@ export default function Page() {
 	const userID = localStorage.getItem('userID')
   const res = apiRequest('/get-profile', 'POST', {userID: userID})
   const worker = {
-    name: "Rajesh Kumar", // ✅ fixed name here
+    name: `${res.name}`, // ✅ fixed name here
     role: "Electrician",
-    rating: 4.6,
+    rating: res.rating,
   }
 
   return (
