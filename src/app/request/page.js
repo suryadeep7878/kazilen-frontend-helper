@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-
+import { apiRequest } from "@/utils/api";
 import OrderHistoryCard from "./components/OrderHistoryCard"
 
 export default function OrderCard() {
@@ -29,7 +29,6 @@ export default function OrderCard() {
 
     setCurrentOrder(newBooking)
 
-    // 👉 Add to top
     setOrders((prev) => [newBooking, ...prev])
   }, [])
 
