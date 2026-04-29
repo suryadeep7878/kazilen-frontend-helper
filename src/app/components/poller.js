@@ -1,40 +1,26 @@
-'use client';
-import { startPolling } from "@/utils/poll";
+"use client";
+
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/utils/api";
 
-export default function BackgroundPoller() {
-  useEffect(() => {
-    let stopPolling = null;
+export default function BackgroundTask() {
+	const userId = localStorage.getItem("userId");
+	const { data, error } = useQuery({
+		queryKey: ["background-sync"],
+		queryFn: () => apiRequest("/poll-this", "POST", { id: userId }),
+		refetchInterval: 10000,
+		refetchIntervalInBackground: true,
+	});
 
-    const syncPollingState = () => {
-      const isOnline = localStorage.getItem('online') === 'true';
-			const userID = localStorage.getItem('userId')
-      if (isOnline && !stopPolling) {
-        console.log("Polling started...");
-        stopPolling = startPolling(async () => {
-          await apiRequest('/poll-this', 'post', {"id": userID}) 
-        }, 10000);
-      } 
-      else if (!isOnline && stopPolling) {
-        console.log("Polling stopped.");
-        stopPolling();
-        stopPolling = null;
-      }
-    };
+	useEffect(() => {
+		if (data) {
+			console.log("Background Sync Successful:", data);
+		}
+		if (error) {
+			console.error("Background Sync Failed:", error);
+		}
+	}, [data, error]);
 
-    syncPollingState();
-
-    window.addEventListener('storage', syncPollingState);
-
-    const interval = setInterval(syncPollingState, 2000);
-
-    return () => {
-      if (stopPolling) stopPolling();
-      window.removeEventListener('storage', syncPollingState);
-      clearInterval(interval);
-    };
-  }, []);
-
-  return null;
+	return null;
 }
