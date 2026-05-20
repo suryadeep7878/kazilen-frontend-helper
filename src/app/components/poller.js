@@ -1,32 +1,37 @@
-'use client'
+"use client";
 
 import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/utils/api";
 
-export default function BackgroundTask() {
-  const { data, error } = useQuery({
-    queryKey: ["background-sync"],
-    queryFn: () => {
-      const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
-      
-      if (!userId) return null;
+export default function BackgroundPoller() {
+	useEffect(() => {
+		if (typeof window === "undefined") return;
 
-      return apiRequest("/poll-this", "POST", { id: userId });
-    },
-    refetchInterval: 10000,
-    refetchIntervalInBackground: true,
-    enabled: typeof window !== "undefined" && !!localStorage.getItem("userId"),
-  });
+		console.log("BackgroundPoller initialized successfully on the client.");
 
-  useEffect(() => {
-    if (data) {
-      console.log("Background Sync Successful:", data);
-    }
-    if (error) {
-      console.error("Background Sync Failed:", error);
-    }
-  }, [data, error]);
+		const runPoll = async () => {
+			try {
+				const userId = localStorage.getItem("userId");
+				if (!userId) {
+					console.log("Polling skipped.");
+					return;
+				}
+				//console.log(`Firing poll request for ID: ${userId}...`);
+				const data = await apiRequest("/poll", "post", { userId: userId });
+				//console.log("Background poll data received:", data);
+			} catch (error) {
+				console.error("Polling network/runtime error:", error);
+			}
+		};
 
-  return null;
+		runPoll();
+
+		const pollInterval = setInterval(runPoll, 5000);
+
+		return () => {
+			console.log("BackgroundPoller cleaned up.");
+			clearInterval(pollInterval);
+		};
+	}, []);
+	return null;
 }
