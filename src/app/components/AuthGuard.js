@@ -18,7 +18,7 @@ export default function AuthGuard({ children }) {
     const checkAuth = () => {
       const keyExists = localStorage.getItem(PROTECTED_KEY)
 
-      if (!keyExists && not (ignore_PATH.includes(pathname))) {
+      if (!keyExists &&  !(ignore_PATH.includes(pathname))) {
         setAuthorized(false)
         router.replace(REDIRECT_PATH)
       } else {
