@@ -7,6 +7,8 @@ import { Loader2 } from "lucide-react"
 const PROTECTED_KEY = "userId" 
 const REDIRECT_PATH = "/login"     
 
+const ignore_PATH = ["/login", "/create-account", "/verify"]
+
 export default function AuthGuard({ children }) {
   const router = useRouter()
   const pathname = usePathname()
@@ -16,7 +18,7 @@ export default function AuthGuard({ children }) {
     const checkAuth = () => {
       const keyExists = localStorage.getItem(PROTECTED_KEY)
 
-      if (!keyExists && pathname !== REDIRECT_PATH) {
+      if (!keyExists && not (ignore_PATH.includes(pathname))) {
         setAuthorized(false)
         router.replace(REDIRECT_PATH)
       } else {
