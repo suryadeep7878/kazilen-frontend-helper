@@ -16,9 +16,8 @@ export default function BackgroundPoller() {
 					console.log("Polling skipped.");
 					return;
 				}
-				//console.log(`Firing poll request for ID: ${userId}...`);
 				const data = await apiRequest("/poll", "post", { userId: userId });
-				//console.log("Background poll data received:", data);
+
 			} catch (error) {
 				console.error("Polling network/runtime error:", error);
 			}
