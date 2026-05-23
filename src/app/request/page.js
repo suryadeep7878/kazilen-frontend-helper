@@ -8,13 +8,12 @@ export default function RequestsPage() {
 	const [request, setRequest] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
-
+	const userId = localStorage.getItem('userId')
 	useEffect(() => {
 		async function fetchRequest() {
 			try {
 				setIsLoading(true);
-				const data = await apiRequest("/get-book");
-
+				const data = await apiRequest("/get-book", {userId: userId});
 				if (data && Object.keys(data).length > 0) {
 					setRequest(data);
 				} else {
@@ -62,7 +61,7 @@ export default function RequestsPage() {
 								{request.status || "Pending"}
 							</span>
 							<h2 className="text-xl font-bold text-gray-900 mb-1">
-								{request.title}
+								{request.action}
 							</h2>
 							<p className="text-gray-600 font-medium">by {request.author}</p>
 						</div>
