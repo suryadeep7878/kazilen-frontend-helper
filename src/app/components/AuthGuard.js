@@ -17,7 +17,6 @@ export default function AuthGuard({ children }) {
 	useEffect(() => {
 		const checkAuth = () => {
 			const keyExists = localStorage.getItem(PROTECTED_KEY);
-			return;
 			if (!keyExists && !ignore_PATH.includes(pathname)) {
 				setAuthorized(false);
 				router.replace(REDIRECT_PATH);
