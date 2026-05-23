@@ -14,40 +14,8 @@ export default function OrderCard() {
   const [orders, setOrders] = useState([])
   const [currentOrder, setCurrentOrder] = useState(null)
 
-  const [timer, setTimer] = useState(282)
   const [showBill, setShowBill] = useState(false)
 
-  // 🆕 Simulate new booking coming
-  useEffect(() => {
-    const newBooking = {
-      id: Date.now(),
-      name: "Litti Chokha",
-      description: "Classic Sattu Filling",
-      price: 139,
-      status: "pending",
-    }
-
-    setCurrentOrder(newBooking)
-
-    setOrders((prev) => [newBooking, ...prev])
-  }, [])
-
-  // ⏱ Timer
-  useEffect(() => {
-    if (timer <= 0) return
-
-    const interval = setInterval(() => {
-      setTimer((t) => t - 1)
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [timer])
-
-  const formatTime = (sec) => {
-    const m = String(Math.floor(sec / 60)).padStart(2, "0")
-    const s = String(sec % 60).padStart(2, "0")
-    return `${m}:${s}`
-  }
 
   const handleReject = () => {
     if (!currentOrder) return
