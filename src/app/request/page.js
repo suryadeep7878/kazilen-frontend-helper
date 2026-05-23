@@ -8,7 +8,7 @@ export default function RequestsPage() {
 	const [request, setRequest] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState(null);
-	const userId = localStorage.getItem('userId')
+	const userId = localStorage.getItem("userId")
 	useEffect(() => {
 		async function fetchRequest() {
 			try {
