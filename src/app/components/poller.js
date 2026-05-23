@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import { apiRequest } from "@/utils/api";
+import { useRouter } from "next/router";
 
 export default function BackgroundPoller() {
+	const router = useRouter();
 	useEffect(() => {
 		if (typeof window === "undefined") return;
 
@@ -17,7 +19,9 @@ export default function BackgroundPoller() {
 					return;
 				}
 				const data = await apiRequest("/poll", "post", { userId: userId });
-
+				if (data.work||data.request){
+					router.push("/request")
+				}
 			} catch (error) {
 				console.error("Polling network/runtime error:", error);
 			}
