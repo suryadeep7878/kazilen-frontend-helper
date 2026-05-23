@@ -1,13 +1,8 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { DetailsSkeleton } from "../../components/Skeletons";
 import { apiRequest } from "@/utils/api";
-
-const WorkerDetails = dynamic(() => import("../components/WorkerDetails"), {
-	loading: () => <DetailsSkeleton />,
-	ssr: false,
-});
+import { useState, useEffect } from "react";
+import WorkerDetails from "../components/WorkerDetails";
 
 export default function Page() {
 	const [worker, setWorker] = useState(null);
