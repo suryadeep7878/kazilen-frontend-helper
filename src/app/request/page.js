@@ -102,7 +102,7 @@ export default function RequestsPage() {
 						No requests found
 					</h3>
 					<p className="text-gray-500 text-sm max-w-sm mx-auto">
-						You currently haven't submitted any book requests. When you do, they
+						You currently havent submitted any book requests. When you do, they
 						will show up right here.
 					</p>
 				</div>
