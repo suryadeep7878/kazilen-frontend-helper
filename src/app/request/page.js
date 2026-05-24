@@ -15,7 +15,9 @@ export default function RequestsPage() {
 				setIsLoading(true);
 				const data = await apiRequest("/get-book", {userId: userId});
 				if (data && Object.values(data).length > 0) {
-					if (data?.work)
+					if (data?.work){
+						setRequest(data)
+					}
 					setRequest(data);
 				} else {
 					setRequest(null);
