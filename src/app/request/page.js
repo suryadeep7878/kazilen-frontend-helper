@@ -14,7 +14,8 @@ export default function RequestsPage() {
 				const userId = localStorage.getItem("userId")
 				setIsLoading(true);
 				const data = await apiRequest("/get-book", {userId: userId});
-				if (data && Object.keys(data).length > 0) {
+				if (data && Object.values(data).length > 0) {
+					if (data?.work)
 					setRequest(data);
 				} else {
 					setRequest(null);
