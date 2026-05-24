@@ -65,7 +65,7 @@ export default function VerifyOtpClient() {
 
         localStorage.setItem("session_token", token);
 
-        const result = await apiRequest("/check", "POST", { phone });
+        const result = await apiRequest("/check", "POST", { phone: phone });
 
         if (result?.exists) {
           router.push("/");
