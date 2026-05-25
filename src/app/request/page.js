@@ -1,58 +1,70 @@
-'use client';
+"use client";
 
-import { apiRequest } from '@/utils/api';
-import React, { useState, useEffect } from 'react';
+import { apiRequest } from "@/utils/api";
+import React, { useState, useEffect } from "react";
 
-
-export default function BookActionCard({ userId }) {
+export default function BookActionCard() {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
-
 	useEffect(() => {
+		const userId = localStorage.getItem("userId");
 		async function fetchActionWorkflow() {
 			try {
-				const userId = localStorage.getItem('userId')
 				setLoading(true);
 				setError(null);
 
-				const bookRes = await apiRequest('get-book', { userId });
+				const bookRes = await apiRequest("/get-book", "post", {
+					userId: userId,
+				});
 
 				let actionRes = null;
 
 				if (bookRes?.workId) {
-					actionRes = await apiRequest('/get-action', { id: bookRes.workId });
+					actionRes = await apiRequest("/get-action", "post", {
+						id: bookRes.workId,
+					});
 				} else if (bookRes?.requestId) {
-					actionRes = await apiRequest('/get-action', { id: bookRes.requestId });
+					actionRes = await apiRequest("/get-action", "post", {
+						id: bookRes.requestId,
+					});
 				}
 
 				if (actionRes) {
 					setData(actionRes);
 				} else {
-					setData({ customerName: '', customerId: '', action: 'none', location: '' });
+					setData({
+						customerName: "",
+						customerId: "",
+						action: "none",
+						location: "",
+					});
 				}
 			} catch (err) {
-				console.error('Error fetching action:', err);
-				setError('Failed to load action data.');
+				console.error("Error fetching action:", err);
+				setError("Failed to load action data.");
 			} finally {
 				setLoading(false);
 			}
 		}
 
-		if (userId) {
-			fetchActionWorkflow();
-		}
-	}, [userId]);
+		fetchActionWorkflow();
+	}, []);
 
 	const handleAccept = () => {
-		const userId = localStorage.getItem('userId');
-		const res = apiRequest('/acceptBooking', 'post', { "usr": userId, "accept": true });
+		const userId = localStorage.getItem("userId");
+		const res = apiRequest("/acceptBooking", "post", {
+			usr: userId,
+			accept: true,
+		});
 	};
 
 	const handleCancel = () => {
-		const userId = localStorage.getItem('userId');
-		const res = apiRequest('/acceptBooking', 'post', { "usr": userId, "accept": false});
-
+		const userId = localStorage.getItem("userId");
+		const res = apiRequest("/acceptBooking", "post", {
+			usr: userId,
+			accept: false,
+		});
 	};
 
 	if (loading) {
@@ -64,10 +76,12 @@ export default function BookActionCard({ userId }) {
 	}
 
 	if (error) {
-		return <div className="text-red-500 font-medium p-4 text-center">{error}</div>;
+		return (
+			<div className="text-red-500 font-medium p-4 text-center">{error}</div>
+		);
 	}
 
-	if (!data || data.action?.toLowerCase() === 'none') {
+	if (!data || data.action?.toLowerCase() === "none") {
 		return (
 			<div className="flex items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-slate-400 font-medium max-w-md mx-auto">
 				No work here
@@ -84,29 +98,51 @@ export default function BookActionCard({ userId }) {
 					<span className="text-xs font-semibold tracking-wider uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full">
 						Action Item
 					</span>
-					<span className="text-xs text-slate-400 font-mono">ID: {data.customerId}</span>
+					<span className="text-xs text-slate-400 font-mono">
+						ID: {data.customerId}
+					</span>
 				</div>
 
 				{/* Content Body */}
-				<h3 className="text-lg font-bold text-slate-800 mb-1">{data.customerName}</h3>
+				<h3 className="text-lg font-bold text-slate-800 mb-1">
+					{data.customerName}
+				</h3>
 
 				<p className="text-sm text-slate-600 mb-2">
-					Status: <span className="font-semibold text-slate-700 capitalize">{data.action}</span>
+					Status:{" "}
+					<span className="font-semibold text-slate-700 capitalize">
+						{data.action}
+					</span>
 				</p>
 
 				{/* New Location Display */}
 				{data.location && (
 					<div className="flex items-start gap-2 text-sm text-slate-500 mb-6 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mt-0.5 text-slate-400 shrink-0">
-							<path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-							<path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							fill="none"
+							viewBox="0 0 24 24"
+							strokeWidth={1.5}
+							stroke="currentColor"
+							className="w-4 h-4 mt-0.5 text-slate-400 shrink-0"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+							/>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"
+							/>
 						</svg>
 						<span>{data.location}</span>
 					</div>
 				)}
 
 				{/* Action Buttons conditionally rendered if action is 'request' */}
-				{data.action?.toLowerCase() === 'request' && (
+				{data.action?.toLowerCase() === "request" && (
 					<div className="flex gap-3 mt-4 border-t border-slate-100 pt-4">
 						<button
 							onClick={handleCancel}

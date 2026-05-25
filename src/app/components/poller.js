@@ -2,10 +2,12 @@
 
 import { useEffect } from "react";
 import { apiRequest } from "@/utils/api";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function BackgroundPoller() {
 	const router = useRouter();
+	const pathname = usePathname();
+
 	useEffect(() => {
 		if (typeof window === "undefined") return;
 
@@ -20,7 +22,7 @@ export default function BackgroundPoller() {
 				}
 				const data = await apiRequest("/poll", "post", { userId: userId });
 				if (data.work||data.request){
-					router.push("/request")
+					if (pathname != "/request") router.push("/request");
 				}
 			} catch (error) {
 				console.error("Polling network/runtime error:", error);
