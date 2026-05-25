@@ -1,114 +1,130 @@
-"use client";
-
-import { useState, useEffect } from "react";
+'use client';
 
 import { apiRequest } from '@/utils/api';
+import React, { useState, useEffect } from 'react';
 
-export default function RequestsPage() {
-	const [request, setRequest] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
+
+export default function BookActionCard({ userId }) {
+	const [data, setData] = useState(null);
+	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+
 	useEffect(() => {
-		async function fetchRequest() {
+		async function fetchActionWorkflow() {
 			try {
-				const userId = localStorage.getItem("userId")
-				setIsLoading(true);
-				const data = await apiRequest("/get-book", {userId: userId});
-				if (data && Object.values(data).length > 0) {
-					if (data?.work){
-						setRequest(data)
-					}
-					setRequest(data);
+				setLoading(true);
+				setError(null);
+
+				// 1. Initial fetch to 'get-book'
+				const bookRes = await apiRequest('get-book', { userId });
+
+				let actionRes = null;
+
+				// 2. Conditional logic: prioritize workId, discard requestId if workId is present
+				if (bookRes?.workId) {
+					actionRes = await apiRequest('get-action', { workId: bookRes.workId });
+				} else if (bookRes?.requestId) {
+					actionRes = await apiRequest('get-action', { requestId: bookRes.requestId });
+				}
+
+				if (actionRes) {
+					setData(actionRes);
 				} else {
-					setRequest(null);
+					// Fallback if neither ID is returned
+					setData({ customerName: '', customerId: '', action: 'none', location: '' });
 				}
 			} catch (err) {
-				console.error("Error fetching request:", err);
-				setError("Failed to load your request. Please try again later.");
+				console.error('Error fetching action:', err);
+				setError('Failed to load action data.');
 			} finally {
-				setIsLoading(false);
+				setLoading(false);
 			}
 		}
 
-		fetchRequest();
-	}, []);
+		if (userId) {
+			fetchActionWorkflow();
+		}
+	}, [userId]);
 
-	if (isLoading) {
+	// --- Handlers for Buttons ---
+	const handleAccept = () => {
+		alert('Action Accepted!');
+	};
+
+	const handleCancel = () => {
+		alert('Action Canceled!');
+	};
+
+	// --- Render States ---
+	if (loading) {
 		return (
-			<div className="flex justify-center items-center min-h-[400px]">
-				<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+			<div className="flex justify-center items-center p-8 text-slate-500">
+				<span className="animate-pulse">Loading work details...</span>
 			</div>
 		);
 	}
 
 	if (error) {
+		return <div className="text-red-500 font-medium p-4 text-center">{error}</div>;
+	}
+
+	// Show "No work here" if action is explicitly 'none'
+	if (!data || data.action?.toLowerCase() === 'none') {
 		return (
-			<div className="max-w-2xl mx-auto mt-8 p-4 bg-red-50 text-red-700 rounded-lg">
-				{error}
+			<div className="flex items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-slate-400 font-medium max-w-md mx-auto">
+				No work here
 			</div>
 		);
 	}
 
+	// --- Card UI Render ---
 	return (
-		<div className="max-w-2xl mx-auto p-6">
-			<h1 className="text-2xl font-bold mb-6 text-gray-800">
-				Your Book Requests
-			</h1>
+		<div className="max-w-md mx-auto bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div className="p-6">
+				{/* Header Tag */}
+				<div className="flex justify-between items-center mb-4">
+					<span className="text-xs font-semibold tracking-wider uppercase bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full">
+						Action Item
+					</span>
+					<span className="text-xs text-slate-400 font-mono">ID: {data.customerId}</span>
+				</div>
 
-			{request ? (
-				/* Rectangle Card Layout */
-				<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow">
-					<div className="flex justify-between items-start">
-						<div>
-							<span className="inline-block text-xs font-semibold tracking-wider uppercase px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 mb-3">
-								{request.status || "Pending"}
-							</span>
-							<h2 className="text-xl font-bold text-gray-900 mb-1">
-								{request.action}
-							</h2>
-							<p className="text-gray-600 font-medium">by {request.author}</p>
-						</div>
+				{/* Content Body */}
+				<h3 className="text-lg font-bold text-slate-800 mb-1">{data.customerName}</h3>
 
-						{request.date && (
-							<span className="text-sm text-gray-400">
-								{new Date(request.date).toLocaleDateString()}
-							</span>
-						)}
+				<p className="text-sm text-slate-600 mb-2">
+					Status: <span className="font-semibold text-slate-700 capitalize">{data.action}</span>
+				</p>
+
+				{/* New Location Display */}
+				{data.location && (
+					<div className="flex items-start gap-2 text-sm text-slate-500 mb-6 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 mt-0.5 text-slate-400 shrink-0">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+							<path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+						</svg>
+						<span>{data.location}</span>
 					</div>
+				)}
 
-					<div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
-						<button className="text-sm text-blue-600 font-semibold hover:text-blue-800 transition-colors">
-							View Details →
+				{/* Action Buttons conditionally rendered if action is 'request' */}
+				{data.action?.toLowerCase() === 'request' && (
+					<div className="flex gap-3 mt-4 border-t border-slate-100 pt-4">
+						<button
+							onClick={handleCancel}
+							className="flex-1 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+						>
+							Cancel
+						</button>
+						<button
+							onClick={handleAccept}
+							className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+						>
+							Accept
 						</button>
 					</div>
-				</div>
-			) : (
-				/* Empty State Layout */
-				<div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-12 text-center">
-					<div className="text-gray-400 mb-3">
-						<svg
-							className="mx-auto h-12 w-12"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={1.5}
-								d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-							/>
-						</svg>
-					</div>
-					<h3 className="text-lg font-medium text-gray-900 mb-1">
-						No requests found
-					</h3>
-					<p className="text-gray-500 text-sm max-w-sm mx-auto">
-						You currently havent submitted any book requests. When you do, they
-						will show up right here.
-					</p>
-				</div>
-			)}
+				)}
+			</div>
 		</div>
 	);
 }
