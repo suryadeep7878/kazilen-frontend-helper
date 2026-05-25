@@ -12,25 +12,23 @@ export default function BookActionCard({ userId }) {
 	useEffect(() => {
 		async function fetchActionWorkflow() {
 			try {
+				const userId = localStorage.getItem('userId')
 				setLoading(true);
 				setError(null);
 
-				// 1. Initial fetch to 'get-book'
 				const bookRes = await apiRequest('get-book', { userId });
 
 				let actionRes = null;
 
-				// 2. Conditional logic: prioritize workId, discard requestId if workId is present
 				if (bookRes?.workId) {
-					actionRes = await apiRequest('get-action', { workId: bookRes.workId });
+					actionRes = await apiRequest('/get-action', { id: bookRes.workId });
 				} else if (bookRes?.requestId) {
-					actionRes = await apiRequest('get-action', { requestId: bookRes.requestId });
+					actionRes = await apiRequest('/get-action', { id: bookRes.requestId });
 				}
 
 				if (actionRes) {
 					setData(actionRes);
 				} else {
-					// Fallback if neither ID is returned
 					setData({ customerName: '', customerId: '', action: 'none', location: '' });
 				}
 			} catch (err) {
@@ -46,16 +44,17 @@ export default function BookActionCard({ userId }) {
 		}
 	}, [userId]);
 
-	// --- Handlers for Buttons ---
 	const handleAccept = () => {
-		alert('Action Accepted!');
+		const userId = localStorage.getItem('userId');
+		const res = apiRequest('/acceptBooking', 'post', { "usr": userId, "accept": true });
 	};
 
 	const handleCancel = () => {
-		alert('Action Canceled!');
+		const userId = localStorage.getItem('userId');
+		const res = apiRequest('/acceptBooking', 'post', { "usr": userId, "accept": false});
+
 	};
 
-	// --- Render States ---
 	if (loading) {
 		return (
 			<div className="flex justify-center items-center p-8 text-slate-500">
@@ -68,7 +67,6 @@ export default function BookActionCard({ userId }) {
 		return <div className="text-red-500 font-medium p-4 text-center">{error}</div>;
 	}
 
-	// Show "No work here" if action is explicitly 'none'
 	if (!data || data.action?.toLowerCase() === 'none') {
 		return (
 			<div className="flex items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-slate-400 font-medium max-w-md mx-auto">
