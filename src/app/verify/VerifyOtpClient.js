@@ -68,6 +68,7 @@ export default function VerifyOtpClient() {
         const result = await apiRequest("/check", "POST", { phone: phone });
 
         if (result?.exists) {
+					localStorage.setItem("userId", result.id)
           router.push("/");
         } else {
           router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
