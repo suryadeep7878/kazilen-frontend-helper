@@ -20,13 +20,13 @@ export default function BookActionCard() {
 
 				let actionRes = null;
 
-				if (bookRes?.workId) {
+				if (bookRes?.work) {
 					actionRes = await apiRequest("/get-action", "post", {
-						id: bookRes.workId,
+						id: bookRes.work,
 					});
-				} else if (bookRes?.requestId) {
+				} else if (bookRes?.request) {
 					actionRes = await apiRequest("/get-action", "post", {
-						id: bookRes.requestId,
+						id: bookRes.request,
 					});
 				}
 
