@@ -7,6 +7,7 @@ export default function BookActionCard() {
 	const [data, setData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [reqwor, setReqwor] = useState(null);
 	useEffect(() => {
 		const userId = localStorage.getItem("userId");
 		async function fetchActionWorkflow() {
@@ -24,10 +25,12 @@ export default function BookActionCard() {
 					actionRes = await apiRequest("/get-action", "post", {
 						id: bookRes.work,
 					});
+					setReqwor("work");
 				} else if (bookRes?.request) {
 					actionRes = await apiRequest("/get-action", "post", {
 						id: bookRes.request,
 					});
+					setReqwor("request");
 				}
 
 				if (actionRes) {
@@ -142,7 +145,7 @@ export default function BookActionCard() {
 				)}
 
 				{/* Action Buttons conditionally rendered if action is 'request' */}
-				{data.action?.toLowerCase() === "request" && (
+				{reqwor === "request" && (
 					<div className="flex gap-3 mt-4 border-t border-slate-100 pt-4">
 						<button
 							onClick={handleCancel}
