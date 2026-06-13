@@ -10,8 +10,8 @@ const WorkerDetails = dynamic(() => import("../components/WorkerDetails"), {
 })
 
 export default function Page() {
-	const userID = localStorage.getItem('userID')
-  const res = apiRequest('/get-profile', 'POST', {userID: userID})
+	// const userID = localStorage.getItem('userID')
+  const res = apiRequest('/get-profile', 'POST' )
   const worker = {
     name: `${res.name}`, // ✅ fixed name here
     role: "Electrician",
