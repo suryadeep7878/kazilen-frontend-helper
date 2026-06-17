@@ -4,7 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { apiRequest } from "../../utils/api";
-import { setCookie } from "@/utils/customCookie";
+import Cookie from 'js-cookie'
+
 
 export default function VerifyOtpClient() {
 	const router = useRouter();
@@ -90,18 +91,16 @@ export default function VerifyOtpClient() {
 		}
 	};
 
-	useEffect(() => {
-		if (seconds <= 0) {
-			setResendEnabled(true);
-			return;
-		}
+        Cookie.set("session_token", token);
 
-		const timer = setInterval(() => {
-			setSeconds((prev) => prev - 1);
-		}, 1000);
+        const result = await apiRequest("/check", "POST", { phone: phone });
 
-		return () => clearInterval(timer);
-	}, [seconds]);
+        if (result?.exists) {
+					Cookie.set("userId", result.userId)
+          router.push("/");
+        } else {
+          router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
+        }
 
 	const formatTime = (sec) => {
 		const min = Math.floor(sec / 60);
