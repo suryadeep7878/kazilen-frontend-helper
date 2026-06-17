@@ -10,7 +10,6 @@ export default function CreateAccountClient({ phoneFromQuery }) {
 	const router = useRouter();
 	const [phoneNo, setPhone] = useState(phoneFromQuery)
 	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
 	const [dob, setDob] = useState("");
 	const [gender, setGender] = useState("");
 	const [touched, setTouched] = useState({});
@@ -43,7 +42,6 @@ export default function CreateAccountClient({ phoneFromQuery }) {
 			const payload = {
 				'phoneNo': `+91${phoneNo}`,
 				'name': name.trim(),
-				'email': email,
 				'dob': dob,
 				'gender': genderEnum,
 			};
@@ -116,22 +114,6 @@ export default function CreateAccountClient({ phoneFromQuery }) {
 				</fieldset>
 			</div>
 
-			{/* Email */}
-			<div className="px-4 mt-4">
-				<fieldset className="relative border border-gray-300 rounded-lg px-3 pt-4 pb-2">
-					<legend className="text-xs px-1 text-gray-500">
-						Email (optional)
-					</legend>
-
-					<input
-						type="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						placeholder="Enter your email"
-						className="w-full border-none bg-transparent p-0 text-sm text-black focus:outline-none"
-					/>
-				</fieldset>
-			</div>
 
 			{/* DOB */}
 			<div className="px-4 mt-4">
