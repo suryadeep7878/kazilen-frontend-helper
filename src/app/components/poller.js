@@ -17,6 +17,7 @@ export default function BackgroundPoller() {
 		const runPoll = async () => {
 			try {
 				const userId = getCookie("userId");
+				return;
 				if (!userId) {
 					console.log("Polling skipped.");
 					return;
