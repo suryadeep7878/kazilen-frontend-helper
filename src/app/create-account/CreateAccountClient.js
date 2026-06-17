@@ -50,7 +50,7 @@ export default function CreateAccountClient({ phoneFromQuery }) {
 			const created = await apiRequest("/create-account", "POST", payload);
 
 			if (created?.id) {
-				localStorage.setItem("userId", String(created.id));
+				localStorage.setItem("userId", String(created.userId));
 			}
 
 			alert("Account created successfully!");
