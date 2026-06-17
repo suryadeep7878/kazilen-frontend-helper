@@ -4,6 +4,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { apiRequest } from "../../utils/api";
+import Cookie from 'js-cookie'
+
 
 export default function VerifyOtpClient() {
 
@@ -63,12 +65,12 @@ export default function VerifyOtpClient() {
             ? response.session
             : JSON.stringify(response.session);
 
-        localStorage.setItem("session_token", token);
+        Cookie.set("session_token", token);
 
         const result = await apiRequest("/check", "POST", { phone: phone });
 
         if (result?.exists) {
-					localStorage.setItem("userId", result.id)
+					Cookie.set("userId", result.userId)
           router.push("/");
         } else {
           router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
