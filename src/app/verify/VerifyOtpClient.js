@@ -47,32 +47,29 @@ export default function VerifyOtpClient() {
         return;
     }
 
-    try {
-        setLoading(true);
+		try {
+			setLoading(true);
 
-        const response = await apiRequest("/verify-otp", "POST", {
-            phone: `91${phone}`,
-            otp: fullOtp,
-        });
-
-        if (response?.success) {
-            const result = await apiRequest("/check", "POST", { phone });
-
-            Cookie("session_token", response.session_token);
-
-            if (result?.exists) {
-                Cookie("userId", result.id);
-                router.push("/");
-            } else {
-                router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
-            }
-        }
-    } catch (e) {
-        alert(`OTP verification failed: ${e.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
+			const response = await apiRequest("/verify-otp", "POST", {
+				phone: `91${phone}`,
+				otp: fullOtp,
+			});
+			if (response?.success) {
+				const result = await apiRequest("/check", "POST", { phone });
+				Cookie("session_token", response.session_token);
+				if (result?.exists) {
+					Cookie("userId", result.id);
+					router.push("/");
+				} else {
+					router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
+				} 
+			}
+		} catch (e) {
+			alert(`OTP verification failed: ${e.message}`);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleResend = async () => {
 		if (!resendEnabled) return;
