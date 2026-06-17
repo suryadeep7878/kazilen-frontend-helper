@@ -1,47 +1,49 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
-// Pages that do NOT require authentication
-const PUBLIC_ROUTES = ['/login', '/create-account', '/verify' ]
+const PROTECTED_KEY = "userId";
+const REDIRECT_PATH = "/login";
+
+const ignore_PATH = ["/login", "/create-account", "/verify"];
 
 export default function AuthGuard({ children }) {
-  const router = useRouter()
-  const pathname = usePathname()
-  const [isChecking, setIsChecking] = useState(true)
+	const router = useRouter();
+	const pathname = usePathname();
+	const [authorized, setAuthorized] = useState(false);
 
-  const isPublicRoute = PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + '/')
-  )
+	useEffect(() => {
+		const checkAuth = () => {
+			const keyExists = localStorage.getItem(PROTECTED_KEY);
+			if (!keyExists && !ignore_PATH.includes(pathname)) {
+				setAuthorized(false);
+				router.replace(REDIRECT_PATH);
+			} else {
+				setAuthorized(true);
+			}
+		};
 
-  useEffect(() => {
-    // TEMPORARY: Bypassing auth check for easier page testing
-    setIsChecking(false);
-    return;
+		checkAuth();
 
-    const userId =
-      localStorage.getItem('kazilen_professional_id') ||
-      localStorage.getItem('kazilen_user_id')
+		const handleStorageChange = (e) => {
+			if (e.key === PROTECTED_KEY || e.key === null) {
+				checkAuth();
+			}
+		};
 
-    if (!userId && !isPublicRoute) {
-      // Not logged in + trying to access a protected route → go to login
-      router.replace('/login')
-    } else if (userId && isPublicRoute) {
-      // Already logged in + trying to access login/create-account → go home
-      router.replace('/')
-    } else {
-      setIsChecking(false)
-    }
-  }, [router, pathname, isPublicRoute])
+		window.addEventListener("storage", handleStorageChange);
+		return () => window.removeEventListener("storage", handleStorageChange);
+	}, [pathname, router]);
 
-  if (isChecking) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-white">
-        <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    )
-  }
+	if (!authorized && pathname !== REDIRECT_PATH) {
+		return (
+			<div className="h-screen w-screen flex items-center justify-center bg-gray-50">
+				<Loader2 className="animate-spin text-blue-600" size={32} />
+			</div>
+		);
+	}
 
-  return children
+	return <>{children}</>;
 }

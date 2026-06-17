@@ -1,4 +1,6 @@
-const BOOKING_BASE_URL = process.env.NEXT_PUBLIC_BOOKING_SERVICE_URL || "http://127.0.0.1:8001";
+import { getCookie } from "@/utils/customCookie";
+
+const BOOKING_BASE_URL = process.env.NEXT_PUBLIC_BOOKING_SERVICE_URL || "https://kazilen-prod-899213799870.asia-south1.run.app/api/helper";
 
 /**
  * Shared helper for Booking Service (FastAPI) requests
@@ -6,7 +8,7 @@ const BOOKING_BASE_URL = process.env.NEXT_PUBLIC_BOOKING_SERVICE_URL || "http://
 async function bookingFetch(endpoint, data = {}, method = "POST") {
     let token = null;
     if (typeof window !== "undefined") {
-        token = localStorage.getItem("session_token");
+        token = getCookie("session_token");
     }
 
     const response = await fetch(`${BOOKING_BASE_URL}${endpoint}`, {
