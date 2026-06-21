@@ -91,7 +91,7 @@ export default function VerifyOtpClient() {
 		}
 	};
 
-        Cookie.set("session_token", token);
+        Cookie.set("session_token", session_token);
 
         const result =  apiRequest("/check", "POST", { phone: phone });
 
