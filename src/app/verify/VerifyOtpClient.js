@@ -4,8 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { apiRequest } from "../../utils/api";
-import Cookie from 'js-cookie'
-
+import Cookie from "js-cookie";
 
 export default function VerifyOtpClient() {
 	const router = useRouter();
@@ -40,12 +39,12 @@ export default function VerifyOtpClient() {
 	};
 
 	const handleVerify = async () => {
-    const fullOtp = otpDigits.join("");
+		const fullOtp = otpDigits.join("");
 
-    if (fullOtp.length !== 6) {
-        alert("Enter a valid 6-digit OTP");
-        return;
-    }
+		if (fullOtp.length !== 6) {
+			alert("Enter a valid 6-digit OTP");
+			return;
+		}
 
 		try {
 			setLoading(true);
@@ -62,7 +61,7 @@ export default function VerifyOtpClient() {
 					router.push("/");
 				} else {
 					router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
-				} 
+				}
 			}
 		} catch (e) {
 			alert(`OTP verification failed: ${e.message}`);
@@ -90,17 +89,6 @@ export default function VerifyOtpClient() {
 			setResending(false);
 		}
 	};
-
-        Cookie.set("session_token", session_token);
-
-        const result =  apiRequest("/check", "POST", { phone: phone });
-
-        if (result?.exists) {
-					Cookie.set("userId", result.userId)
-          router.push("/");
-        } else {
-          router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
-        }
 
 	const formatTime = (sec) => {
 		const min = Math.floor(sec / 60);
