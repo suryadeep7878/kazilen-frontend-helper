@@ -1,21 +1,26 @@
 import { NextResponse } from "next/server";
-import { getCookie } from "./utils/customCookie";
 
 const PUBLIC_PATHS = ["/login", "/create-account", "/verify"];
 
-export async function middleware(req) {
+export function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  const isPublicPath = PUBLIC_PATHS.includes(pathname);
+  const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
 
-  const session = await getCookie("session_id"); 
+  const session = req.cookies.get("session_id")?.value;
 
   if (!session && !isPublicPath) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    const loginUrl = new URL("/login", req.url);
+    if (req.nextUrl.pathname !== loginUrl.pathname) {
+      return NextResponse.redirect(loginUrl);
+    }
   }
 
   if (session && isPublicPath) {
-    return NextResponse.redirect(new URL("/", req.url));
+    const homeUrl = new URL("/", req.url);
+    if (req.nextUrl.pathname !== homeUrl.pathname) {
+      return NextResponse.redirect(homeUrl);
+    }
   }
 
   return NextResponse.next();
@@ -23,7 +28,7 @@ export async function middleware(req) {
 
 export const config = {
   matcher: [
-    // Exclude static files, images, etc.
-    "/((?!_next/static|_next/image|favicon.ico|api|images).*)",
+    // Ignore API routes, static files, images, and favicons
+    "/((?!api|_next/static|_next/image|images|favicon.ico).*)",
   ],
 };
