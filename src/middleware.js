@@ -1,27 +1,20 @@
 import { NextResponse } from "next/server";
+import { getCookie } from "./utils/customCookie";
 
-const PUBLIC_PATHS = [
-  "/login",
-  "/create-account",
-  "/verify", // allow homepage if needed
-];
+const PUBLIC_PATHS = ["/login", "/create-account", "/verify"];
 
-export function middleware(req) {
+export async function middleware(req) {
   const { pathname } = req.nextUrl;
 
-  const isPublic = PUBLIC_PATHS.some((path) =>
-    pathname.startsWith(path)
-  );
+  const isPublicPath = PUBLIC_PATHS.includes(pathname);
 
-  const session = req.cookies.get("session_id");
+  const session = await getCookie("session_id"); 
 
-  // Not logged in -> redirect
-  if (!session && !isPublic) {
+  if (!session && !isPublicPath) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // Logged in -> prevent going back to login
-  if (session && (pathname === "/login" || pathname === "/verify")) {
+  if (session && isPublicPath) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
@@ -30,6 +23,7 @@ export function middleware(req) {
 
 export const config = {
   matcher: [
+    // Exclude static files, images, etc.
     "/((?!_next/static|_next/image|favicon.ico|api|images).*)",
   ],
 };
