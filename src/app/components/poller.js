@@ -17,8 +17,8 @@ export default function BackgroundPoller() {
 		const runPoll = async () => {
 			try {
 				const userId = getCookie("userId");
-				return;
-				if (!userId) {
+				const session_token = getCookie("session_token");
+				if ((!userId) || (!session_token)) {
 					console.log("Polling skipped.");
 					return;
 				}
@@ -39,6 +39,6 @@ export default function BackgroundPoller() {
 			console.log("BackgroundPoller cleaned up.");
 			clearInterval(pollInterval);
 		};
-	}, []);
+	}, [router, pathname]);
 	return null;
 }
