@@ -24,7 +24,7 @@ export default function BackgroundPoller() {
 				}
 				const data = await apiRequest("/poll", "post", { userId: userId });
 				if (data.work||data.request){
-					if (pathname != "/request") router.push("/request");
+					console.log("request aayi hai")
 				}
 			} catch (error) {
 				console.error("Polling network/runtime error:", error);
