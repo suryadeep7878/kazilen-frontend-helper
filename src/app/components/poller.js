@@ -16,8 +16,8 @@ export default function BackgroundPoller() {
 
 		const runPoll = async () => {
 			try {
-				const userId = getCookie("userId");
-				const session_token = getCookie("session_token");
+				const userId = await getCookie("userId");
+				const session_token = await getCookie("session_token");
 				if ((!userId) || (!session_token)) {
 					console.log("Polling skipped.");
 					return;
