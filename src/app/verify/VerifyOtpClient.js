@@ -4,8 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { ArrowLeft } from "lucide-react";
 import { apiRequest } from "../../utils/api";
-import Cookie from 'js-cookie'
-
+import Cookie from "js-cookie";
 
 export default function VerifyOtpClient() {
 	const router = useRouter();
@@ -40,39 +39,36 @@ export default function VerifyOtpClient() {
 	};
 
 	const handleVerify = async () => {
-    const fullOtp = otpDigits.join("");
+		const fullOtp = otpDigits.join("");
 
-    if (fullOtp.length !== 6) {
-        alert("Enter a valid 6-digit OTP");
-        return;
-    }
+		if (fullOtp.length !== 6) {
+			alert("Enter a valid 6-digit OTP");
+			return;
+		}
 
-    try {
-        setLoading(true);
+		try {
+			setLoading(true);
 
-        const response = await apiRequest("/verify-otp", "POST", {
-            phone: `91${phone}`,
-            otp: fullOtp,
-        });
-
-        if (response?.success) {
-            const result = await apiRequest("/check", "POST", { phone });
-
-            Cookie("session_token", response.session_token);
-
-            if (result?.exists) {
-                Cookie("userId", result.id);
-                router.push("/");
-            } else {
-                router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
-            }
-        }
-    } catch (e) {
-        alert(`OTP verification failed: ${e.message}`);
-    } finally {
-        setLoading(false);
-    }
-};
+			const response = await apiRequest("/verify-otp", "POST", {
+				phone: `91${phone}`,
+				otp: fullOtp,
+			});
+			if (response?.success) {
+				const result = await apiRequest("/check", "POST", { phone });
+				Cookie.set("session_token", response.session_token);
+				if (result?.exists) {
+					Cookie.set("userId", result.userId);
+					router.push("/");
+				} else {
+					router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
+				}
+			}
+		} catch (e) {
+			alert(`OTP verification failed: ${e.message}`);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleResend = async () => {
 		if (!resendEnabled) return;
@@ -93,17 +89,6 @@ export default function VerifyOtpClient() {
 			setResending(false);
 		}
 	};
-
-        Cookie.set("session_token", token);
-
-        const result =  apiRequest("/check", "POST", { phone: phone });
-
-        if (result?.exists) {
-					Cookie.set("userId", result.userId)
-          router.push("/");
-        } else {
-          router.push(`/create-account?phone=${encodeURIComponent(phone)}`);
-        }
 
 	const formatTime = (sec) => {
 		const min = Math.floor(sec / 60);

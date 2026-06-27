@@ -16,15 +16,15 @@ export default function BackgroundPoller() {
 
 		const runPoll = async () => {
 			try {
-				const userId = getCookie("userId");
-				return;
-				if (!userId) {
+				const userId = await getCookie("userId");
+				const session_token = await getCookie("session_token");
+				if ((!userId) || (!session_token)) {
 					console.log("Polling skipped.");
 					return;
 				}
 				const data = await apiRequest("/poll", "post", { userId: userId });
 				if (data.work||data.request){
-					if (pathname != "/request") router.push("/request");
+					console.log("request aayi hai")
 				}
 			} catch (error) {
 				console.error("Polling network/runtime error:", error);
@@ -39,6 +39,6 @@ export default function BackgroundPoller() {
 			console.log("BackgroundPoller cleaned up.");
 			clearInterval(pollInterval);
 		};
-	}, []);
+	}, [router, pathname]);
 	return null;
 }
