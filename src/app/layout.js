@@ -4,7 +4,6 @@ import BottomNav from './components/BottomNav'
 import LocationLoader from './components/LocationLoader';
 import Providers from './providers';
 import NetworkStatus from '../components/NetworkStatus';
-import AuthGuard from './components/AuthGuard';
 import LayoutWrapper from './components/LayoutWrapper';
 import BackgroundPoller from './components/poller';
 
@@ -23,11 +22,9 @@ export default function RootLayout({ children }) {
         <Providers>
 					<BackgroundPoller />
           <LocationLoader />
-          <AuthGuard>
             <LayoutWrapper>
               {children}
             </LayoutWrapper>
-          </AuthGuard>
           <BottomNav /> {/* Always included, but self-hides on other pages */}
         </Providers>
       </body>

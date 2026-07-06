@@ -1,40 +1,44 @@
-'use client';
-import { startPolling } from "@/utils/poll";
+"use client";
+
 import { useEffect } from "react";
 import { apiRequest } from "@/utils/api";
+import { useRouter, usePathname } from "next/navigation";
+import { getCookie } from "@/utils/customCookie";
 
 export default function BackgroundPoller() {
-  useEffect(() => {
-    let stopPolling = null;
+	const router = useRouter();
+	const pathname = usePathname();
 
-    const syncPollingState = () => {
-      const isOnline = localStorage.getItem('online') === 'true';
-			const userID = localStorage.getItem('userId')
-      if (isOnline && !stopPolling) {
-        console.log("Polling started...");
-        stopPolling = startPolling(async () => {
-          await apiRequest('/poll-this', 'post', {"id": userID}) 
-        }, 10000);
-      } 
-      else if (!isOnline && stopPolling) {
-        console.log("Polling stopped.");
-        stopPolling();
-        stopPolling = null;
-      }
-    };
+	useEffect(() => {
+		if (typeof window === "undefined") return;
 
-    syncPollingState();
+		console.log("BackgroundPoller initialized successfully on the client.");
 
-    window.addEventListener('storage', syncPollingState);
+		const runPoll = async () => {
+			try {
+				const userId = await getCookie("userId");
+				const session_token = await getCookie("session_token");
+				if ((!userId) || (!session_token)) {
+					console.log("Polling skipped.");
+					return;
+				}
+				const data = await apiRequest("/poll", "post", { userId: userId });
+				if (data.work||data.request){
+					console.log("request aayi hai")
+				}
+			} catch (error) {
+				console.error("Polling network/runtime error:", error);
+			}
+		};
 
-    const interval = setInterval(syncPollingState, 2000);
+		runPoll();
 
-    return () => {
-      if (stopPolling) stopPolling();
-      window.removeEventListener('storage', syncPollingState);
-      clearInterval(interval);
-    };
-  }, []);
+		const pollInterval = setInterval(runPoll, 5000);
 
-  return null;
+		return () => {
+			console.log("BackgroundPoller cleaned up.");
+			clearInterval(pollInterval);
+		};
+	}, [router, pathname]);
+	return null;
 }
