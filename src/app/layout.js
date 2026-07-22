@@ -6,6 +6,8 @@ import Providers from './providers';
 import NetworkStatus from '../components/NetworkStatus';
 import LayoutWrapper from './components/LayoutWrapper';
 import BackgroundPoller from './components/poller';
+import { AuthProvider } from '@/context/AuthContext';
+import AuthModal from './components/AuthModal';
 
 export const metadata = {
 	title: "Kazilen",
@@ -20,12 +22,15 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen bg-white">
         <NetworkStatus />
         <Providers>
-					<BackgroundPoller />
-          <LocationLoader />
+          <AuthProvider>
+            <BackgroundPoller />
+            <LocationLoader />
             <LayoutWrapper>
               {children}
             </LayoutWrapper>
-          <BottomNav /> {/* Always included, but self-hides on other pages */}
+            <BottomNav /> {/* Always included, but self-hides on other pages */}
+            <AuthModal />
+          </AuthProvider>
         </Providers>
       </body>
     </html>
